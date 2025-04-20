@@ -1,0 +1,74 @@
+@{
+    ViewData["Title"] = "Yöneticiler";
+    Layout = "_YoneticiLayout";
+}
+
+@model IEnumerable<KykCamasirhaneRandevu.DAL.Entities.Yonetici>
+
+<div class="container-fluid">
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">Yöneticiler</h6>
+            <a asp-action="YoneticiEkle" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Yeni Yönetici Ekle
+            </a>
+        </div>
+        <div class="card-body">
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger">
+                    @TempData["ErrorMessage"]
+                </div>
+            }
+            <div class="table-responsive">
+                <table class="table table-bordered" id="yoneticiTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>TC Numarası</th>
+                            <th>Ad Soyad</th>
+                            <th>E-posta</th>
+                            <th>İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var yonetici in Model)
+                        {
+                            <tr>
+                                <td>@yonetici.YoneticiTC</td>
+                                <td>@yonetici.YoneticiAdSoyad</td>
+                                <td>@yonetici.YoneticiEposta</td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a asp-action="YoneticiDuzenle" asp-route-id="@yonetici.YoneticiID" class="btn btn-warning btn-sm">
+                                            <i class="bi bi-pencil"></i> Düzenle
+                                        </a>
+                                        @if (yonetici.YoneticiID != 1)
+                                        {
+                                            <form asp-action="YoneticiSil" asp-route-id="@yonetici.YoneticiID" method="post" class="d-inline">
+                                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Bu yöneticiyi silmek istediğinizden emin misiniz?')">
+                                                    <i class="bi bi-trash"></i> Sil
+                                                </button>
+                                            </form>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $('#yoneticiTable').DataTable({
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/tr.json'
+                }
+            });
+        });
+    </script>
+} 

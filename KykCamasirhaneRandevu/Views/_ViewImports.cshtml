@@ -1,0 +1,8 @@
+﻿@using KykCamasirhaneRandevu
+@using KykCamasirhaneRandevu.Models
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    var culture = new System.Globalization.CultureInfo("tr-TR");
+    System.Threading.Thread.CurrentThread.CurrentCulture = culture;
+    System.Threading.Thread.CurrentThread.CurrentUICulture = culture;
+}

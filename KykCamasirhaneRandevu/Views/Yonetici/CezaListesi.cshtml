@@ -1,0 +1,59 @@
+@{
+    ViewData["Title"] = "Cezalı Öğrenciler";
+    Layout = "_YoneticiLayout";
+}
+
+@model IEnumerable<KykCamasirhaneRandevu.DAL.Entities.Ogrenci>
+
+<div class="container-fluid">
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Cezalı Öğrenciler</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="cezaTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>TC Numarası</th>
+                            <th>Ad Soyad</th>
+                            <th>E-posta</th>
+                            <th>Oda/Yatak No</th>
+                            <th>İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var ogrenci in Model)
+                        {
+                            <tr>
+                                <td>@ogrenci.OgrenciTC</td>
+                                <td>@ogrenci.OgrenciAdSoyad</td>
+                                <td>@ogrenci.OgrenciEposta</td>
+                                <td>@ogrenci.Oda_YatakNo</td>
+                                <td>
+                                    <form asp-action="CezaKaldir" asp-route-id="@ogrenci.OgrenciID" method="post" class="d-inline">
+                                        <button type="submit" class="btn btn-success btn-sm" onclick="return confirm('Bu öğrencinin cezasını kaldırmak istediğinizden emin misiniz?')">
+                                            <i class="bi bi-check-circle"></i> Ceza Kaldır
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $('#cezaTable').DataTable({
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/tr.json'
+                }
+            });
+        });
+    </script>
+} 

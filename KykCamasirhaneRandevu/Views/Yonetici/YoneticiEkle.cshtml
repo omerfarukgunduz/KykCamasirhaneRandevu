@@ -1,0 +1,64 @@
+@{
+    ViewData["Title"] = "Yeni Yönetici Ekle";
+    Layout = "_YoneticiLayout";
+}
+
+@model KykCamasirhaneRandevu.DAL.Entities.Yonetici
+
+<div class="container-fluid">
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Yeni Yönetici Ekle</h6>
+        </div>
+        <div class="card-body">
+            <form asp-action="YoneticiEkle" method="post">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label asp-for="YoneticiTC" class="control-label">TC Numarası</label>
+                            <input asp-for="YoneticiTC" class="form-control" maxlength="11" />
+                            <span asp-validation-for="YoneticiTC" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label asp-for="YoneticiAdSoyad" class="control-label">Ad Soyad</label>
+                            <input asp-for="YoneticiAdSoyad" class="form-control" maxlength="70" />
+                            <span asp-validation-for="YoneticiAdSoyad" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label asp-for="YoneticiEposta" class="control-label">E-posta</label>
+                            <input asp-for="YoneticiEposta" class="form-control" type="email" maxlength="100" />
+                            <span asp-validation-for="YoneticiEposta" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label asp-for="YoneticiSifre" class="control-label">Şifre</label>
+                            <input asp-for="YoneticiSifre" class="form-control" type="password" maxlength="100" />
+                            <span asp-validation-for="YoneticiSifre" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save"></i> Kaydet
+                    </button>
+                    <a asp-action="YoneticiListele" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Geri Dön
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/4.0.0/jquery.validate.unobtrusive.min.js"></script>
+} 
