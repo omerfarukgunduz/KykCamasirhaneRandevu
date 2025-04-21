@@ -1,0 +1,122 @@
+@model IEnumerable<KykCamasirhaneRandevu.DAL.Entities.Randevu>
+
+@{
+    ViewData["Title"] = "Randevular";
+    Layout = "_OgrenciLayout";
+
+    // Teslim zamanını hesaplayan yardımcı fonksiyon
+    string HesaplaTeslimZamani(DateTime randevuTarihi, bool kurutma)
+    {
+        if (kurutma)
+        {
+            return randevuTarihi.AddHours(3).ToString("dd.MM.yyyy HH:mm");
+        }
+        else
+        {
+            return randevuTarihi.AddMinutes(30).ToString("dd.MM.yyyy HH:mm");
+        }
+    }
+}
+
+<div class="container-fluid">
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Müsait Randevular</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="randevuTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Makine No</th>
+                            <th>Randevu Tarihi</th>
+                            <th>Teslim Zamanı</th>
+                            <th>Kurutma</th>
+                            <th>İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var randevu in Model.Where(r => r.OgrenciID == null))
+                        {
+                            <tr>
+                                <td>@randevu.MakineNo</td>
+                                <td>@randevu.RandevuTarihi.ToString("dd.MM.yyyy HH:mm")</td>
+                                <td>@HesaplaTeslimZamani(randevu.RandevuTarihi, randevu.Kurutma)</td>
+                                <td>@(randevu.Kurutma ? "Evet" : "Hayır")</td>
+                                <td>
+                                    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#randevuModal-@randevu.RandevuID">
+                                        <i class="bi bi-calendar-plus"></i> Randevu Al
+                                    </button>
+
+                                    <!-- Randevu Alma Modal -->
+                                    <div class="modal fade" id="randevuModal-@randevu.RandevuID" tabindex="-1" aria-labelledby="randevuModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="randevuModalLabel">Randevu Al</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <form asp-action="RandevuAl" method="post">
+                                                    <div class="modal-body">
+                                                        <input type="hidden" name="id" value="@randevu.RandevuID" />
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Kurutma İstiyor musunuz?</label>
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="radio" name="kurutma" id="kurutmaEvet-@randevu.RandevuID" value="true" checked>
+                                                                <label class="form-check-label" for="kurutmaEvet-@randevu.RandevuID">
+                                                                    Evet (3 saat)
+                                                                </label>
+                                                            </div>
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="radio" name="kurutma" id="kurutmaHayir-@randevu.RandevuID" value="false">
+                                                                <label class="form-check-label" for="kurutmaHayir-@randevu.RandevuID">
+                                                                    Hayır (30 dakika)
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                                                        <button type="submit" class="btn btn-primary">Randevu Al</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $('#randevuTable').DataTable({
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/tr.json'
+                },
+                order: [[1, 'asc']] // Randevu tarihine göre sırala
+            });
+        });
+    </script>
+} 

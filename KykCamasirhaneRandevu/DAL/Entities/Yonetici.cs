@@ -9,16 +9,21 @@ namespace KykCamasirhaneRandevu.DAL.Entities
             [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
             public int YoneticiID { get; set; }
 
-            [MaxLength(70)]
+            [Required]
+            [MaxLength(50)]
             public string YoneticiAdSoyad { get; set; }
 
             [MaxLength(100)]
             public string YoneticiEposta { get; set; }
 
-            [MaxLength(100)]
+            [Required]
+            [MaxLength(50)]
             public string YoneticiSifre { get; set; }
 
+            [Required]
             [MaxLength(11)]
             public string YoneticiTC { get; set; }
-    }
+
+            public int VarsayilanCezaSuresiDakika { get; set; } = 2; // Varsayılan 2 dakika
+        }
 } 

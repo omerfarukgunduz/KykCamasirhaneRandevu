@@ -1,0 +1,75 @@
+@model IEnumerable<KykCamasirhaneRandevu.DAL.Entities.Mesaj>
+
+@{
+    ViewData["Title"] = "Mesajlar";
+    Layout = "_YoneticiLayout";
+}
+
+<div class="container-fluid">
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Öğrenci Mesajları</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="mesajTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Öğrenci</th>
+                            <th>Başlık</th>
+                            <th>Tarih</th>
+                            <th>Durum</th>
+                            <th>İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var mesaj in Model)
+                        {
+                            <tr>
+                                <td>@mesaj.Ogrenci.OgrenciAdSoyad</td>
+                                <td>@mesaj.Baslik</td>
+                                <td>@mesaj.Tarih.ToString("dd.MM.yyyy HH:mm")</td>
+                                <td>
+                                    @if (mesaj.Okundu)
+                                    {
+                                        <span class="badge bg-success">Okundu</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning">Okunmadı</span>
+                                    }
+                                </td>
+                                <td>
+                                    <a asp-action="MesajCevap" asp-route-id="@mesaj.MesajID" class="btn btn-primary btn-sm">
+                                        <i class="bi bi-reply"></i> Cevapla
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $('#mesajTable').DataTable({
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/tr.json'
+                },
+                order: [[2, 'desc']] // Tarihe göre sırala
+            });
+        });
+    </script>
+} 

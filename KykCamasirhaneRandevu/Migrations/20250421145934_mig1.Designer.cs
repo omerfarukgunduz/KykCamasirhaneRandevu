@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KykCamasirhaneRandevu.Migrations
 {
     [DbContext(typeof(KykContext))]
-    [Migration("20250420121304_RandevuModelGuncelleme")]
-    partial class RandevuModelGuncelleme
+    [Migration("20250421145934_mig1")]
+    partial class mig1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -32,6 +32,9 @@ namespace KykCamasirhaneRandevu.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AnketId"));
+
+                    b.Property<DateTime>("AnketTarihi")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("ArayuzPuani")
                         .HasColumnType("int");
@@ -66,12 +69,15 @@ namespace KykCamasirhaneRandevu.Migrations
 
                     b.Property<string>("DuyuruKonu")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("DuyuruMetin")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("DuyuruTarihi")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("DuyuruID");
 
@@ -86,29 +92,27 @@ namespace KykCamasirhaneRandevu.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MesajID"));
 
-                    b.Property<bool>("Cevaplandi")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Konu")
+                    b.Property<string>("Baslik")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("MesajIcerik")
+                    b.Property<string>("Icerik")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("OgrenciAdSoyad")
-                        .IsRequired()
-                        .HasMaxLength(70)
-                        .HasColumnType("nvarchar(70)");
+                    b.Property<int?>("OgrenciID")
+                        .HasColumnType("int");
 
-                    b.Property<string>("OgrenciEposta")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                    b.Property<bool>("Okundu")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("Tarih")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("MesajID");
+
+                    b.HasIndex("OgrenciID");
 
                     b.ToTable("Mesajlar");
                 });
@@ -126,13 +130,13 @@ namespace KykCamasirhaneRandevu.Migrations
 
                     b.Property<string>("Oda_YatakNo")
                         .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("OgrenciAdSoyad")
                         .IsRequired()
-                        .HasMaxLength(70)
-                        .HasColumnType("nvarchar(70)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("OgrenciEposta")
                         .IsRequired()
@@ -149,12 +153,7 @@ namespace KykCamasirhaneRandevu.Migrations
                         .HasMaxLength(11)
                         .HasColumnType("nvarchar(11)");
 
-                    b.Property<int?>("RandevuID")
-                        .HasColumnType("int");
-
                     b.HasKey("OgrenciID");
-
-                    b.HasIndex("RandevuID");
 
                     b.ToTable("Ogrenciler");
                 });
@@ -170,10 +169,10 @@ namespace KykCamasirhaneRandevu.Migrations
                     b.Property<bool>("Kurutma")
                         .HasColumnType("bit");
 
-                    b.Property<int>("OgrenciID")
+                    b.Property<int>("MakineNo")
                         .HasColumnType("int");
 
-                    b.Property<int>("OgrenciID1")
+                    b.Property<int?>("OgrenciID")
                         .HasColumnType("int");
 
                     b.Property<bool?>("RandevuGerceklesti")
@@ -190,7 +189,7 @@ namespace KykCamasirhaneRandevu.Migrations
 
                     b.HasKey("RandevuID");
 
-                    b.HasIndex("OgrenciID1");
+                    b.HasIndex("OgrenciID");
 
                     b.ToTable("Randevular");
                 });
@@ -228,25 +227,29 @@ namespace KykCamasirhaneRandevu.Migrations
                     b.ToTable("Yoneticiler");
                 });
 
-            modelBuilder.Entity("KykCamasirhaneRandevu.DAL.Entities.Ogrenci", b =>
+            modelBuilder.Entity("KykCamasirhaneRandevu.DAL.Entities.Mesaj", b =>
                 {
-                    b.HasOne("KykCamasirhaneRandevu.DAL.Entities.Randevu", "Randevu")
+                    b.HasOne("KykCamasirhaneRandevu.DAL.Entities.Ogrenci", "Ogrenci")
                         .WithMany()
-                        .HasForeignKey("RandevuID")
+                        .HasForeignKey("OgrenciID")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.Navigation("Randevu");
+                    b.Navigation("Ogrenci");
                 });
 
             modelBuilder.Entity("KykCamasirhaneRandevu.DAL.Entities.Randevu", b =>
                 {
                     b.HasOne("KykCamasirhaneRandevu.DAL.Entities.Ogrenci", "Ogrenci")
-                        .WithMany()
-                        .HasForeignKey("OgrenciID1")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .WithMany("Randevular")
+                        .HasForeignKey("OgrenciID")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Ogrenci");
+                });
+
+            modelBuilder.Entity("KykCamasirhaneRandevu.DAL.Entities.Ogrenci", b =>
+                {
+                    b.Navigation("Randevular");
                 });
 #pragma warning restore 612, 618
         }

@@ -13,10 +13,26 @@ namespace KykCamasirhaneRandevu.DAL.Context
         public DbSet<Yonetici> Yoneticiler { get; set; }
         public DbSet<Randevu> Randevular { get; set; }
         public DbSet<Duyuru> Duyurular { get; set; }
+        public DbSet<Anket> Anketler { get; set; }
+        public DbSet<Mesaj> Mesajlar { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            // Randevu - Ogrenci ilişkisi
+            modelBuilder.Entity<Randevu>()
+                .HasOne(r => r.Ogrenci)
+                .WithMany(o => o.Randevular)
+                .HasForeignKey(r => r.OgrenciID)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            // Mesaj - Ogrenci ilişkisi
+            modelBuilder.Entity<Mesaj>()
+                .HasOne(m => m.Ogrenci)
+                .WithMany()
+                .HasForeignKey(m => m.OgrenciID)
+                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

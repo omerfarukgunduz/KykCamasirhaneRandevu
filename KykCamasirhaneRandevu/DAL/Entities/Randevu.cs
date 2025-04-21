@@ -15,11 +15,13 @@ namespace KykCamasirhaneRandevu.DAL.Entities
         [Required]
         public DateTime RandevuTarihi { get; set; }
 
+        [Required]
+        [Range(1, 35, ErrorMessage = "Makine numarası 1-35 arasında olmalıdır.")]
+        public int MakineNo { get; set; }
+
         public bool Kurutma { get; set; } = true;
 
         public int TeslimeKalanSure { get; set; } = 180;
-
-        public bool RandevuOnayDurumu { get; set; } = false;
 
         public bool? RandevuGerceklesti { get; set; } = null;
 

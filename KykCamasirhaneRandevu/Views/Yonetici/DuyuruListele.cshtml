@@ -18,8 +18,9 @@
                 <table class="table table-bordered" id="duyuruTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
-                            <th>Konu</th>
-                            <th>Duyuru Metni</th>
+                            <th>@Html.DisplayNameFor(model => model.DuyuruKonu)</th>
+                            <th>@Html.DisplayNameFor(model => model.DuyuruMetin)</th>
+                            <th>@Html.DisplayNameFor(model => model.DuyuruTarihi)</th>
                             <th>İşlemler</th>
                         </tr>
                     </thead>
@@ -27,8 +28,9 @@
                         @foreach (var duyuru in Model)
                         {
                             <tr>
-                                <td>@duyuru.DuyuruKonu</td>
-                                <td>@duyuru.DuyuruMetin</td>
+                                <td>@Html.DisplayFor(modelItem => duyuru.DuyuruKonu)</td>
+                                <td>@Html.DisplayFor(modelItem => duyuru.DuyuruMetin)</td>
+                                <td>@duyuru.DuyuruTarihi.ToString("dd.MM.yyyy HH:mm")</td>
                                 <td>
                                     <div class="btn-group" role="group">
                                         <a asp-action="DuyuruDuzenle" asp-route-id="@duyuru.DuyuruID" class="btn btn-warning btn-sm">

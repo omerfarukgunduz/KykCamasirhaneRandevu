@@ -15,5 +15,8 @@ namespace KykCamasirhaneRandevu.DAL.Entities
         public int ArayuzPuani { get; set; }
         public int GenelMemnuniyetPuani { get; set; }
         public int OneriPuani { get; set; }
+
+        [Required]
+        public DateTime AnketTarihi { get; set; } = DateTime.Now;
     }
 } 

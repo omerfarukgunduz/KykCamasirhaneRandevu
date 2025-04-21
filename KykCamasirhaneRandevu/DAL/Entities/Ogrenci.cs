@@ -11,27 +11,31 @@ namespace KykCamasirhaneRandevu.DAL.Entities
         public int OgrenciID { get; set; }
 
         [Required]
+        [MaxLength(50)]
+        public string OgrenciAdSoyad { get; set; }
+
+        [Required]
         [MaxLength(11)]
         public string OgrenciTC { get; set; }
 
         [Required]
-        [MaxLength(100)]
-        public string OgrenciAdSoyad { get; set; }
-
-        [Required]
-        [MaxLength(100)]
-        public string OgrenciEposta { get; set; }
-
-        [Required]
-        [MaxLength(100)]
+        [MaxLength(50)]
         public string OgrenciSifre { get; set; }
 
         [Required]
-        [MaxLength(50)]
+        [MaxLength(100)]
+        [EmailAddress]
+        public string OgrenciEposta { get; set; }
+
+        [Required]
+        [MaxLength(20)]
         public string Oda_YatakNo { get; set; }
 
-        public bool CezaDurumu { get; set; } = false;
+        public bool CezaDurumu { get; set; }
 
-        public virtual ICollection<Randevu>? Randevular { get; set; }
+        public DateTime? CezaBitisTarihi { get; set; }
+
+        public virtual ICollection<Randevu> Randevular { get; set; }
+        public virtual ICollection<Mesaj> Mesajlar { get; set; }
     }
 }

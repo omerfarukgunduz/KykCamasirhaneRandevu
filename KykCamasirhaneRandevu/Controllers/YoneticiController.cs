@@ -3,16 +3,23 @@ using KykCamasirhaneRandevu.DAL.Context;
 using KykCamasirhaneRandevu.DAL.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.Configuration;
+using System.IO;
+using KykCamasirhaneRandevu.Models;
+using System.Collections.Generic;
 
 namespace KykCamasirhaneRandevu.Controllers
 {
     public class YoneticiController : Controller
     {
         private readonly KykContext _context;
+        private readonly IConfiguration _configuration;
 
-        public YoneticiController(KykContext context)
+        public YoneticiController(KykContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
         }
 
         public IActionResult Login()
@@ -75,6 +82,9 @@ namespace KykCamasirhaneRandevu.Controllers
         {
             if (ModelState.IsValid)
             {
+                // Ceza süresini null olarak ayarla
+                ogrenci.CezaBitisTarihi = null;
+                
                 _context.Ogrenciler.Add(ogrenci);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(OgrenciListele));
@@ -147,6 +157,7 @@ namespace KykCamasirhaneRandevu.Controllers
         {
             if (ModelState.IsValid)
             {
+                duyuru.DuyuruTarihi = DateTime.Now;
                 _context.Duyurular.Add(duyuru);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(DuyuruListele));
@@ -357,37 +368,24 @@ namespace KykCamasirhaneRandevu.Controllers
 
         public async Task<IActionResult> RandevuListele()
         {
-            var randevular = await _context.Randevular
-                .Include(r => r.Ogrenci)
-                .OrderByDescending(r => r.RandevuTarihi)
-                .ToListAsync();
-            return View(randevular);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> RandevuOnayla(int id)
-        {
-            var randevu = await _context.Randevular.FindAsync(id);
-            if (randevu != null)
+            try
             {
-                randevu.RandevuOnayDurumu = true;
-                _context.Update(randevu);
-                await _context.SaveChangesAsync();
-            }
-            return RedirectToAction(nameof(RandevuListele));
-        }
+                var randevular = await _context.Randevular
+                    .Include(r => r.Ogrenci)
+                    .OrderByDescending(r => r.RandevuTarihi)
+                    .ToListAsync();
 
-        [HttpPost]
-        public async Task<IActionResult> RandevuReddet(int id)
-        {
-            var randevu = await _context.Randevular.FindAsync(id);
-            if (randevu != null)
-            {
-                randevu.RandevuOnayDurumu = false;
-                _context.Update(randevu);
-                await _context.SaveChangesAsync();
+                // Debug için randevu sayısını logla
+                System.Diagnostics.Debug.WriteLine($"Toplam randevu sayısı: {randevular.Count}");
+
+                return View(randevular);
             }
-            return RedirectToAction(nameof(RandevuListele));
+            catch (Exception ex)
+            {
+                // Hata durumunda logla
+                System.Diagnostics.Debug.WriteLine($"RandevuListele hatası: {ex.Message}");
+                throw;
+            }
         }
 
         [HttpPost]
@@ -406,14 +404,177 @@ namespace KykCamasirhaneRandevu.Controllers
         [HttpPost]
         public async Task<IActionResult> RandevuGerceklesmedi(int id)
         {
-            var randevu = await _context.Randevular.FindAsync(id);
+            var randevu = await _context.Randevular
+                .Include(r => r.Ogrenci)
+                .FirstOrDefaultAsync(r => r.RandevuID == id);
+            
             if (randevu != null)
             {
                 randevu.RandevuGerceklesti = false;
+                
+                // Öğrenciye ceza ver
+                if (randevu.Ogrenci != null)
+                {
+                    randevu.Ogrenci.CezaDurumu = true;
+                    _context.Update(randevu.Ogrenci);
+                }
+                
                 _context.Update(randevu);
                 await _context.SaveChangesAsync();
             }
             return RedirectToAction(nameof(RandevuListele));
+        }
+
+        public IActionResult RandevuEkle()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> RandevuEkle(Randevu randevu)
+        {
+            // Tüm makineler için randevu oluştur
+            for (int i = 1; i <= 35; i++)
+            {
+                var yeniRandevu = new Randevu
+                {
+                    RandevuTarihi = randevu.RandevuTarihi,
+                    MakineNo = i,
+                    Kurutma = true
+                };
+                _context.Randevular.Add(yeniRandevu);
+            }
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(RandevuListele));
+        }
+
+        public async Task<IActionResult> RandevuDuzenle(int id)
+        {
+            var randevu = await _context.Randevular.FindAsync(id);
+            if (randevu == null)
+            {
+                return NotFound();
+            }
+            return View(randevu);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> RandevuDuzenle(int id, Randevu randevu)
+        {
+            if (id != randevu.RandevuID)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Update(randevu);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!_context.Randevular.Any(e => e.RandevuID == id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(RandevuListele));
+            }
+            return View(randevu);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> RandevuSil(int id)
+        {
+            var randevu = await _context.Randevular.FindAsync(id);
+            if (randevu != null)
+            {
+                _context.Randevular.Remove(randevu);
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction(nameof(RandevuListele));
+        }
+
+        public async Task<IActionResult> Mesajlar()
+        {
+            var mesajlar = await _context.Mesajlar
+                .Include(m => m.Ogrenci)
+                .OrderByDescending(m => m.Tarih)
+                .ToListAsync();
+            return View(mesajlar);
+        }
+
+        public async Task<IActionResult> MesajCevap(int id)
+        {
+            var mesaj = await _context.Mesajlar
+                .Include(m => m.Ogrenci)
+                .FirstOrDefaultAsync(m => m.MesajID == id);
+
+            if (mesaj == null)
+            {
+                return NotFound();
+            }
+
+            // Mesajı okundu olarak işaretle
+            mesaj.Okundu = true;
+            _context.Update(mesaj);
+            await _context.SaveChangesAsync();
+
+            return View(mesaj);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> MesajCevap(int id, string cevap)
+        {
+            var mesaj = await _context.Mesajlar
+                .Include(m => m.Ogrenci)
+                .FirstOrDefaultAsync(m => m.MesajID == id);
+
+            if (mesaj == null)
+            {
+                return NotFound();
+            }
+
+            // Cevap mesajını oluştur
+            var cevapMesaji = new Mesaj
+            {
+                OgrenciID = mesaj.OgrenciID,
+                Baslik = "Re: " + mesaj.Baslik,
+                Icerik = cevap,
+                Tarih = DateTime.Now,
+                Okundu = false
+            };
+
+            _context.Mesajlar.Add(cevapMesaji);
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Mesaj başarıyla gönderildi.";
+            return RedirectToAction(nameof(Mesajlar));
+        }
+
+        public IActionResult CezaSuresiAyarla()
+        {
+            var dakika = HttpContext.Session.GetInt32("CezaSuresiDakika") ?? 2;
+            var model = new CezaSuresiViewModel { Dakika = dakika };
+            return View(model);
+        }
+
+        [HttpPost]
+        public IActionResult CezaSuresiAyarla(CezaSuresiViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                HttpContext.Session.SetInt32("CezaSuresiDakika", model.Dakika);
+                TempData["SuccessMessage"] = $"Ceza süresi {model.Dakika} dakika olarak ayarlandı.";
+                return RedirectToAction(nameof(CezaSuresiAyarla));
+            }
+            return View(model);
         }
     }
 } 

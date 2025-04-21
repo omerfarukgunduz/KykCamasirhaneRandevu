@@ -1,0 +1,74 @@
+@model KykCamasirhaneRandevu.Models.CezaSuresiViewModel
+
+@{
+    ViewData["Title"] = "Ceza Süresi Ayarla";
+    Layout = "_YoneticiLayout";
+}
+
+<div class="container-fluid">
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Ceza Süresi Ayarla</h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <form asp-action="CezaSuresiAyarla" method="post">
+                        <div class="form-group mb-3">
+                            <label class="form-label">Ceza Süresi (Dakika)</label>
+                            <input type="number" class="form-control" name="Dakika" id="dakikaInput" 
+                                   min="1" max="14400" value="@Model.Dakika" required
+                                   onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+                            <div class="form-text">1-14400 dakika (10 gün) arasında bir değer giriniz</div>
+                        </div>
+                        <div class="form-group mt-4">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save"></i> Ceza Süresini Kaydet
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="m-0 font-weight-bold text-primary">Bilgilendirme</h6>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">1 gün = 1440 dakika</li>
+                                <li class="list-group-item">2 gün = 2880 dakika</li>
+                                <li class="list-group-item">3 gün = 4320 dakika</li>
+                                <li class="list-group-item">4 gün = 5760 dakika</li>
+                                <li class="list-group-item">5 gün = 7200 dakika</li>
+                                <li class="list-group-item">6 gün = 8640 dakika</li>
+                                <li class="list-group-item">7 gün = 10080 dakika</li>
+                                <li class="list-group-item">8 gün = 11520 dakika</li>
+                                <li class="list-group-item">9 gün = 12960 dakika</li>
+                                <li class="list-group-item">10 gün = 14400 dakika</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Sadece rakam girişine izin ver
+            $('#dakikaInput').on('input', function() {
+                this.value = this.value.replace(/[^0-9]/g, '');
+            });
+        });
+    </script>
+} 

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KykCamasirhaneRandevu.Migrations
 {
     [DbContext(typeof(KykContext))]
-    [Migration("20250420122835_iliskiduzenleme2")]
-    partial class iliskiduzenleme2
+    [Migration("20250421170337_mig3")]
+    partial class mig3
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -32,6 +32,9 @@ namespace KykCamasirhaneRandevu.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AnketId"));
+
+                    b.Property<DateTime>("AnketTarihi")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("ArayuzPuani")
                         .HasColumnType("int");
@@ -66,12 +69,15 @@ namespace KykCamasirhaneRandevu.Migrations
 
                     b.Property<string>("DuyuruKonu")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("DuyuruMetin")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("DuyuruTarihi")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("DuyuruID");
 
@@ -86,29 +92,32 @@ namespace KykCamasirhaneRandevu.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MesajID"));
 
-                    b.Property<bool>("Cevaplandi")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Konu")
+                    b.Property<string>("Baslik")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("MesajIcerik")
+                    b.Property<string>("Icerik")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("OgrenciAdSoyad")
-                        .IsRequired()
-                        .HasMaxLength(70)
-                        .HasColumnType("nvarchar(70)");
+                    b.Property<int?>("OgrenciID")
+                        .HasColumnType("int");
 
-                    b.Property<string>("OgrenciEposta")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                    b.Property<int?>("OgrenciID1")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Okundu")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("Tarih")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("MesajID");
+
+                    b.HasIndex("OgrenciID");
+
+                    b.HasIndex("OgrenciID1");
 
                     b.ToTable("Mesajlar");
                 });
@@ -121,18 +130,21 @@ namespace KykCamasirhaneRandevu.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OgrenciID"));
 
+                    b.Property<DateTime?>("CezaBitisTarihi")
+                        .HasColumnType("datetime2");
+
                     b.Property<bool>("CezaDurumu")
                         .HasColumnType("bit");
 
                     b.Property<string>("Oda_YatakNo")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<string>("OgrenciAdSoyad")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("OgrenciEposta")
                         .IsRequired()
@@ -141,8 +153,8 @@ namespace KykCamasirhaneRandevu.Migrations
 
                     b.Property<string>("OgrenciSifre")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("OgrenciTC")
                         .IsRequired()
@@ -165,13 +177,13 @@ namespace KykCamasirhaneRandevu.Migrations
                     b.Property<bool>("Kurutma")
                         .HasColumnType("bit");
 
-                    b.Property<int>("OgrenciID")
+                    b.Property<int>("MakineNo")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("OgrenciID")
                         .HasColumnType("int");
 
                     b.Property<bool?>("RandevuGerceklesti")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("RandevuOnayDurumu")
                         .HasColumnType("bit");
 
                     b.Property<DateTime>("RandevuTarihi")
@@ -195,10 +207,13 @@ namespace KykCamasirhaneRandevu.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("YoneticiID"));
 
+                    b.Property<int>("VarsayilanCezaSuresiDakika")
+                        .HasColumnType("int");
+
                     b.Property<string>("YoneticiAdSoyad")
                         .IsRequired()
-                        .HasMaxLength(70)
-                        .HasColumnType("nvarchar(70)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("YoneticiEposta")
                         .IsRequired()
@@ -207,8 +222,8 @@ namespace KykCamasirhaneRandevu.Migrations
 
                     b.Property<string>("YoneticiSifre")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("YoneticiTC")
                         .IsRequired()
@@ -220,19 +235,34 @@ namespace KykCamasirhaneRandevu.Migrations
                     b.ToTable("Yoneticiler");
                 });
 
+            modelBuilder.Entity("KykCamasirhaneRandevu.DAL.Entities.Mesaj", b =>
+                {
+                    b.HasOne("KykCamasirhaneRandevu.DAL.Entities.Ogrenci", "Ogrenci")
+                        .WithMany()
+                        .HasForeignKey("OgrenciID")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("KykCamasirhaneRandevu.DAL.Entities.Ogrenci", null)
+                        .WithMany("Mesajlar")
+                        .HasForeignKey("OgrenciID1");
+
+                    b.Navigation("Ogrenci");
+                });
+
             modelBuilder.Entity("KykCamasirhaneRandevu.DAL.Entities.Randevu", b =>
                 {
                     b.HasOne("KykCamasirhaneRandevu.DAL.Entities.Ogrenci", "Ogrenci")
                         .WithMany("Randevular")
                         .HasForeignKey("OgrenciID")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Ogrenci");
                 });
 
             modelBuilder.Entity("KykCamasirhaneRandevu.DAL.Entities.Ogrenci", b =>
                 {
+                    b.Navigation("Mesajlar");
+
                     b.Navigation("Randevular");
                 });
 #pragma warning restore 612, 618

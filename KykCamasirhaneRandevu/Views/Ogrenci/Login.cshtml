@@ -1,40 +1,81 @@
 @{
-    ViewData["Title"] = "Giriş Yap";
-    Layout = "_Layout";
+    ViewData["Title"] = "Öğrenci Girişi";
+    Layout = null;
 }
 
-<div class="container">
-    <div class="row justify-content-center min-vh-100 align-items-center">
-        <div class="col-12 col-md-6 col-lg-4">
-            <div class="card shadow">
-                <div class="card-body p-5">
-                    <h2 class="text-center mb-4">Giriş Yap</h2>
-                    @if (ViewBag.Error != null)
-                    {
-                        <div class="alert alert-danger" role="alert">
-                            @ViewBag.Error
-                        </div>
-                    }
-                    <form asp-action="Login" method="post">
-                        <div class="mb-3">
-                            <label for="ogrenciNo" class="form-label">Öğrenci TC Numarası</label>
-                            <input type="text" class="form-control" id="ogrenciNo" name="ogrenciNo" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="sifre" class="form-label">Şifre</label>
-                            <input type="password" class="form-control" id="sifre" name="sifre" required>
-                        </div>
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary">Giriş Yap</button>
-                            <a href="#" class="btn btn-link">Şifremi Unuttum</a>
-                        </div>
-                    </form>
-                </div>
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - KYK Çamaşırhane Randevu</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            background-color: #f8f9fa;
+        }
+        .login-form {
+            width: 100%;
+            max-width: 400px;
+            padding: 15px;
+            margin: auto;
+        }
+        .login-form .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        .login-form .card-header {
+            background-color: #fff;
+            border-bottom: none;
+            text-align: center;
+            padding: 20px 0;
+        }
+        .login-form .card-body {
+            padding: 30px;
+        }
+        .login-form .form-control {
+            border-radius: 5px;
+            padding: 12px;
+        }
+        .login-form .btn-primary {
+            padding: 12px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-form">
+        <div class="card">
+            <div class="card-header">
+                <h4>KYK Çamaşırhane Randevu</h4>
+                <p class="text-muted">Öğrenci Girişi</p>
+            </div>
+            <div class="card-body">
+                @if (ViewBag.Error != null)
+                {
+                    <div class="alert alert-danger" role="alert">
+                        @ViewBag.Error
+                    </div>
+                }
+                <form asp-action="Login" method="post">
+                    <div class="mb-3">
+                        <label for="ogrenciTC" class="form-label">TC Numarası</label>
+                        <input type="text" class="form-control" id="ogrenciTC" name="ogrenciTC" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="sifre" class="form-label">Şifre</label>
+                        <input type="password" class="form-control" id="sifre" name="sifre" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Giriş Yap</button>
+                </form>
             </div>
         </div>
     </div>
-</div>
 
-@section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-} 
+</body>
+</html> 

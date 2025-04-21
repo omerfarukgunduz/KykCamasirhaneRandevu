@@ -1,0 +1,54 @@
+@{
+    ViewData["Title"] = "Randevu Düzenle";
+    Layout = "_YoneticiLayout";
+}
+
+@model KykCamasirhaneRandevu.DAL.Entities.Randevu
+
+<div class="container-fluid">
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Randevu Düzenle</h6>
+        </div>
+        <div class="card-body">
+            <form asp-action="RandevuDuzenle" method="post">
+                <input type="hidden" asp-for="RandevuID" />
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label asp-for="MakineNo" class="control-label">Makine No</label>
+                            <select asp-for="MakineNo" class="form-control">
+                                @for (int i = 1; i <= 35; i++)
+                                {
+                                    <option value="@i">@i</option>
+                                }
+                            </select>
+                            <span asp-validation-for="MakineNo" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label asp-for="RandevuTarihi" class="control-label">Randevu Tarihi</label>
+                            <input asp-for="RandevuTarihi" class="form-control" type="datetime-local" />
+                            <span asp-validation-for="RandevuTarihi" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save"></i> Kaydet
+                    </button>
+                    <a asp-action="RandevuListele" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Geri Dön
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/4.0.0/jquery.validate.unobtrusive.min.js"></script>
+} 

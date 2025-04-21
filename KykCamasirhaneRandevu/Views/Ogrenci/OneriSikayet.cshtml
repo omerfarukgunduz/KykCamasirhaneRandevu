@@ -1,0 +1,35 @@
+@{
+    ViewData["Title"] = "Öneri/Şikayet";
+    Layout = "_OgrenciLayout";
+}
+
+<div class="container-fluid">
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Öneri/Şikayet Gönder</h6>
+        </div>
+        <div class="card-body">
+            <form asp-action="OneriSikayet" method="post">
+                <div class="mb-3">
+                    <label for="baslik" class="form-label">Başlık</label>
+                    <input type="text" class="form-control" id="baslik" name="baslik" required>
+                </div>
+                <div class="mb-3">
+                    <label for="icerik" class="form-label">İçerik</label>
+                    <textarea class="form-control" id="icerik" name="icerik" rows="5" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-send"></i> Gönder
+                </button>
+            </form>
+        </div>
+    </div>
+</div> 

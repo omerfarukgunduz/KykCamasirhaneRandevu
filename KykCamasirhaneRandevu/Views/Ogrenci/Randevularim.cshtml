@@ -1,0 +1,148 @@
+@model IEnumerable<KykCamasirhaneRandevu.DAL.Entities.Randevu>
+
+@{
+    ViewData["Title"] = "Randevularım";
+    Layout = "_OgrenciLayout";
+
+    // Teslim zamanını hesaplayan yardımcı fonksiyon
+    string HesaplaTeslimZamani(DateTime randevuTarihi, bool kurutma)
+    {
+        if (kurutma)
+        {
+            return randevuTarihi.AddHours(3).ToString("dd.MM.yyyy HH:mm");
+        }
+        else
+        {
+            return randevuTarihi.AddMinutes(30).ToString("dd.MM.yyyy HH:mm");
+        }
+    }
+
+    // Aktif ve geçmiş randevuları ayır
+    var aktifRandevular = Model.Where(r => r.RandevuGerceklesti == null);
+    var gecmisRandevular = Model.Where(r => r.RandevuGerceklesti != null);
+}
+
+<div class="container-fluid">
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- Aktif Randevular -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Aktif Randevularım</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="aktifRandevuTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Makine No</th>
+                            <th>Randevu Tarihi</th>
+                            <th>Teslim Zamanı</th>
+                            <th>Kurutma</th>
+                            <th>İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var randevu in aktifRandevular)
+                        {
+                            <tr>
+                                <td>@randevu.MakineNo</td>
+                                <td>@randevu.RandevuTarihi.ToString("dd.MM.yyyy HH:mm")</td>
+                                <td>@HesaplaTeslimZamani(randevu.RandevuTarihi, randevu.Kurutma)</td>
+                                <td>@(randevu.Kurutma ? "Evet" : "Hayır")</td>
+                                <td>
+                                    <form asp-action="RandevuIptal" method="post" class="d-inline">
+                                        <input type="hidden" name="id" value="@randevu.RandevuID" />
+                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Bu randevuyu iptal etmek istediğinizden emin misiniz?')">
+                                            <i class="bi bi-x-circle"></i> İptal Et
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Geçmiş Randevular -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Geçmiş Randevularım</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="gecmisRandevuTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Makine No</th>
+                            <th>Randevu Tarihi</th>
+                            <th>Teslim Zamanı</th>
+                            <th>Kurutma</th>
+                            <th>Durum</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var randevu in gecmisRandevular)
+                        {
+                            <tr>
+                                <td>@randevu.MakineNo</td>
+                                <td>@randevu.RandevuTarihi.ToString("dd.MM.yyyy HH:mm")</td>
+                                <td>@HesaplaTeslimZamani(randevu.RandevuTarihi, randevu.Kurutma)</td>
+                                <td>@(randevu.Kurutma ? "Evet" : "Hayır")</td>
+                                <td>
+                                    @if (randevu.RandevuGerceklesti == true)
+                                    {
+                                        <span class="badge bg-success">Gerçekleşti</span>
+                                    }
+                                    else if (randevu.RandevuGerceklesti == false)
+                                    {
+                                        <span class="badge bg-danger">Gerçekleşmedi</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning">Bekliyor</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $('#aktifRandevuTable').DataTable({
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/tr.json'
+                },
+                order: [[1, 'asc']] // Randevu tarihine göre sırala
+            });
+
+            $('#gecmisRandevuTable').DataTable({
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/tr.json'
+                },
+                order: [[1, 'desc']] // Randevu tarihine göre sırala
+            });
+        });
+    </script>
+} 

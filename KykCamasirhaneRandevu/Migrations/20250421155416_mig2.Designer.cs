@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KykCamasirhaneRandevu.Migrations
 {
     [DbContext(typeof(KykContext))]
-    [Migration("20250420123925_YeniMigration")]
-    partial class YeniMigration
+    [Migration("20250421155416_mig2")]
+    partial class mig2
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,40 @@ namespace KykCamasirhaneRandevu.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("KykCamasirhaneRandevu.DAL.Entities.Anket", b =>
+                {
+                    b.Property<int>("AnketId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AnketId"));
+
+                    b.Property<DateTime>("AnketTarihi")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ArayuzPuani")
+                        .HasColumnType("int");
+
+                    b.Property<int>("GenelMemnuniyetPuani")
+                        .HasColumnType("int");
+
+                    b.Property<int>("GirisKolayligiPuani")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OneriPuani")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PerformansPuani")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RandevuIslemiPuani")
+                        .HasColumnType("int");
+
+                    b.HasKey("AnketId");
+
+                    b.ToTable("Anketler");
+                });
 
             modelBuilder.Entity("KykCamasirhaneRandevu.DAL.Entities.Duyuru", b =>
                 {
@@ -48,6 +82,39 @@ namespace KykCamasirhaneRandevu.Migrations
                     b.HasKey("DuyuruID");
 
                     b.ToTable("Duyurular");
+                });
+
+            modelBuilder.Entity("KykCamasirhaneRandevu.DAL.Entities.Mesaj", b =>
+                {
+                    b.Property<int>("MesajID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MesajID"));
+
+                    b.Property<string>("Baslik")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Icerik")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("OgrenciID")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Okundu")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("Tarih")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("MesajID");
+
+                    b.HasIndex("OgrenciID");
+
+                    b.ToTable("Mesajlar");
                 });
 
             modelBuilder.Entity("KykCamasirhaneRandevu.DAL.Entities.Ogrenci", b =>
@@ -102,13 +169,13 @@ namespace KykCamasirhaneRandevu.Migrations
                     b.Property<bool>("Kurutma")
                         .HasColumnType("bit");
 
-                    b.Property<int>("OgrenciID")
+                    b.Property<int>("MakineNo")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("OgrenciID")
                         .HasColumnType("int");
 
                     b.Property<bool?>("RandevuGerceklesti")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("RandevuOnayDurumu")
                         .HasColumnType("bit");
 
                     b.Property<DateTime>("RandevuTarihi")
@@ -157,13 +224,22 @@ namespace KykCamasirhaneRandevu.Migrations
                     b.ToTable("Yoneticiler");
                 });
 
+            modelBuilder.Entity("KykCamasirhaneRandevu.DAL.Entities.Mesaj", b =>
+                {
+                    b.HasOne("KykCamasirhaneRandevu.DAL.Entities.Ogrenci", "Ogrenci")
+                        .WithMany()
+                        .HasForeignKey("OgrenciID")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Ogrenci");
+                });
+
             modelBuilder.Entity("KykCamasirhaneRandevu.DAL.Entities.Randevu", b =>
                 {
                     b.HasOne("KykCamasirhaneRandevu.DAL.Entities.Ogrenci", "Ogrenci")
                         .WithMany("Randevular")
                         .HasForeignKey("OgrenciID")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Ogrenci");
                 });
