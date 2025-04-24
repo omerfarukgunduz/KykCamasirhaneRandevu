@@ -554,7 +554,7 @@ namespace KykCamasirhaneRandevu.Controllers
             _context.Mesajlar.Add(cevapMesaji);
             await _context.SaveChangesAsync();
 
-            TempData["SuccessMessage"] = "Mesaj başarıyla gönderildi.";
+            TempData["SuccessMessage"] = "Mesajınız başarıyla gönderildi.";
             return RedirectToAction(nameof(Mesajlar));
         }
 

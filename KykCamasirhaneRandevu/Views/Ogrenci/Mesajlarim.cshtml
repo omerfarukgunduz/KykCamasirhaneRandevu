@@ -1,8 +1,8 @@
 @model IEnumerable<KykCamasirhaneRandevu.DAL.Entities.Mesaj>
 
 @{
-    ViewData["Title"] = "Mesajlar";
-    Layout = "_YoneticiLayout";
+    ViewData["Title"] = "Mesajlarım";
+    Layout = "_OgrenciLayout";
 }
 
 <div class="container-fluid">
@@ -16,14 +16,13 @@
 
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Öğrenci Mesajları</h6>
+            <h6 class="m-0 font-weight-bold text-primary">Mesajlarım</h6>
         </div>
         <div class="card-body">
             <div class="table-responsive">
                 <table class="table table-bordered" id="mesajTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
-                            <th>Öğrenci</th>
                             <th>Konu</th>
                             <th>Tarih</th>
                             <th>Durum</th>
@@ -33,8 +32,7 @@
                     <tbody>
                         @foreach (var mesaj in Model)
                         {
-                            <tr>
-                                <td>@mesaj.Ogrenci.OgrenciAdSoyad</td>
+                            <tr data-icerik="@mesaj.Icerik">
                                 <td>@mesaj.Baslik</td>
                                 <td>@mesaj.Tarih.ToString("dd.MM.yyyy HH:mm")</td>
                                 <td>
@@ -66,10 +64,9 @@
                                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
-                                            <p><strong>Gönderen:</strong> @mesaj.Ogrenci.OgrenciAdSoyad</p>
                                             <p><strong>Tarih:</strong> @mesaj.Tarih.ToString("dd.MM.yyyy HH:mm")</p>
                                             <p><strong>İçerik:</strong></p>
-                                            <p style="word-wrap: break-word; white-space: pre-wrap;">@mesaj.Icerik</p>
+                                            <p>@mesaj.Icerik</p>
                                         </div>
                                         <div class="modal-footer">
                                             <a asp-action="MesajCevap" asp-route-id="@mesaj.MesajID" class="btn btn-primary">
@@ -95,7 +92,7 @@
                 language: {
                     url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/tr.json'
                 },
-                order: [[2, 'desc']] // Tarihe göre sırala
+                order: [[1, 'desc']] // Tarihe göre sırala
             });
         });
     </script>

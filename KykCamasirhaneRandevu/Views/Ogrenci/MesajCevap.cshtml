@@ -2,7 +2,7 @@
 
 @{
     ViewData["Title"] = "Mesaj Cevapla";
-    Layout = "_YoneticiLayout";
+    Layout = "_OgrenciLayout";
 }
 
 <div class="container-fluid">
@@ -12,13 +12,13 @@
         </div>
         <div class="card-body">
             <div class="mb-4">
+                <h5>Orijinal Mesaj</h5>
                 <div class="card">
                     <div class="card-body">
-                        <p><strong>Gönderen:</strong> @Model.Ogrenci.OgrenciAdSoyad</p>
                         <p><strong>Tarih:</strong> @Model.Tarih.ToString("dd.MM.yyyy HH:mm")</p>
                         <p><strong>Konu:</strong> @Model.Baslik</p>
                         <p><strong>İçerik:</strong></p>
-                        <p style="word-wrap: break-word; white-space: pre-wrap;">@Model.Icerik</p>
+                        <p>@Model.Icerik</p>
                     </div>
                 </div>
             </div>
@@ -26,21 +26,17 @@
             <form asp-action="MesajCevap" method="post">
                 <input type="hidden" name="id" value="@Model.MesajID" />
                 <div class="mb-3">
-                    <label class="form-label">Alıcı</label>
-                    <input type="text" class="form-control" value="@Model.Ogrenci.OgrenciAdSoyad" readonly>
-                </div>
-                <div class="mb-3">
                     <label class="form-label">Konu</label>
                     <input type="text" class="form-control" value="Re: @Model.Baslik" readonly>
                 </div>
                 <div class="mb-3">
                     <label for="cevap" class="form-label">Cevabınız</label>
-                    <textarea class="form-control" id="cevap" name="cevap" rows="5" required style="word-wrap: break-word; white-space: pre-wrap;"></textarea>
+                    <textarea class="form-control" id="cevap" name="cevap" rows="5" required></textarea>
                 </div>
                 <button type="submit" class="btn btn-primary">
                     <i class="bi bi-send"></i> Gönder
                 </button>
-                <a asp-action="Mesajlar" class="btn btn-secondary">
+                <a asp-action="Mesajlarim" class="btn btn-secondary">
                     <i class="bi bi-arrow-left"></i> Geri Dön
                 </a>
             </form>

@@ -239,5 +239,79 @@ namespace KykCamasirhaneRandevu.Controllers
             TempData["SuccessMessage"] = "Randevunuz başarıyla alındı!";
             return RedirectToAction(nameof(Randevular));
         }
+
+        public async Task<IActionResult> Mesajlarim()
+        {
+            var ogrenciId = HttpContext.Session.GetInt32("OgrenciID");
+            if (ogrenciId == null)
+            {
+                return RedirectToAction("Login");
+            }
+
+            var mesajlar = await _context.Mesajlar
+                .Where(m => m.OgrenciID == ogrenciId)
+                .OrderByDescending(m => m.Tarih)
+                .ToListAsync();
+
+            return View(mesajlar);
+        }
+
+        public async Task<IActionResult> MesajCevap(int id)
+        {
+            var ogrenciId = HttpContext.Session.GetInt32("OgrenciID");
+            if (ogrenciId == null)
+            {
+                return RedirectToAction("Login");
+            }
+
+            var mesaj = await _context.Mesajlar
+                .FirstOrDefaultAsync(m => m.MesajID == id && m.OgrenciID == ogrenciId);
+
+            if (mesaj == null)
+            {
+                return NotFound();
+            }
+
+            // Mesajı okundu olarak işaretle
+            mesaj.Okundu = true;
+            _context.Update(mesaj);
+            await _context.SaveChangesAsync();
+
+            return View(mesaj);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> MesajCevap(int id, string cevap)
+        {
+            var ogrenciId = HttpContext.Session.GetInt32("OgrenciID");
+            if (ogrenciId == null)
+            {
+                return RedirectToAction("Login");
+            }
+
+            var mesaj = await _context.Mesajlar
+                .FirstOrDefaultAsync(m => m.MesajID == id && m.OgrenciID == ogrenciId);
+
+            if (mesaj == null)
+            {
+                return NotFound();
+            }
+
+            // Cevap mesajını oluştur
+            var cevapMesaji = new Mesaj
+            {
+                OgrenciID = ogrenciId,
+                Baslik = "Re: " + mesaj.Baslik,
+                Icerik = cevap,
+                Tarih = DateTime.Now,
+                Okundu = false
+            };
+
+            _context.Mesajlar.Add(cevapMesaji);
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Mesajınız başarıyla gönderildi.";
+            return RedirectToAction(nameof(Mesajlarim));
+        }
     }
 } 
