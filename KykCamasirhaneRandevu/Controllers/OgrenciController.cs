@@ -170,6 +170,34 @@ namespace KykCamasirhaneRandevu.Controllers
             return View();
         }
 
+        [HttpPost]
+        public async Task<IActionResult> AnketDegerlendir(int GirisKolayligiPuani, int RandevuIslemiPuani, 
+            int PerformansPuani, int ArayuzPuani, int GenelMemnuniyetPuani, int OneriPuani)
+        {
+            var ogrenciId = HttpContext.Session.GetInt32("OgrenciID");
+            if (ogrenciId == null)
+            {
+                return RedirectToAction("Login");
+            }
+
+            var anket = new Anket
+            {
+                GirisKolayligiPuani = GirisKolayligiPuani,
+                RandevuIslemiPuani = RandevuIslemiPuani,
+                PerformansPuani = PerformansPuani,
+                ArayuzPuani = ArayuzPuani,
+                GenelMemnuniyetPuani = GenelMemnuniyetPuani,
+                OneriPuani = OneriPuani,
+                AnketTarihi = DateTime.Now
+            };
+
+            _context.Anketler.Add(anket);
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Anket değerlendirmeniz başarıyla kaydedildi.";
+            return RedirectToAction(nameof(Anketler));
+        }
+
         public IActionResult Cikis()
         {
             HttpContext.Session.Clear();

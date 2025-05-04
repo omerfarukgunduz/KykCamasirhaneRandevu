@@ -1,0 +1,151 @@
+@{
+    ViewData["Title"] = "Anket Sonuçları";
+    Layout = "_YoneticiLayout";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">Anket Sonuçları</h6>
+                    <div>
+                        <span class="badge bg-primary">Toplam Anket: @ViewBag.ToplamAnket</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Giriş Kolaylığı -->
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-header">
+                                    <h6 class="m-0 font-weight-bold text-primary">Sisteme Giriş Kolaylığı</h6>
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="girisKolayligiChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Randevu İşlemi -->
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-header">
+                                    <h6 class="m-0 font-weight-bold text-primary">Randevu İşlemi Kolaylığı</h6>
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="randevuIslemiChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Performans -->
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-header">
+                                    <h6 class="m-0 font-weight-bold text-primary">Sistem Performansı</h6>
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="performansChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Arayüz -->
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-header">
+                                    <h6 class="m-0 font-weight-bold text-primary">Arayüz ve Tasarım</h6>
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="arayuzChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Genel Memnuniyet -->
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-header">
+                                    <h6 class="m-0 font-weight-bold text-primary">Genel Memnuniyet</h6>
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="memnuniyetChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Öneri -->
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-header">
+                                    <h6 class="m-0 font-weight-bold text-primary">Öneri Puanı</h6>
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="oneriChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Grafik renkleri
+        const colors = {
+            bar: 'rgba(54, 162, 235, 0.8)',
+            hover: 'rgba(54, 162, 235, 1)',
+            border: 'rgba(54, 162, 235, 1)'
+        };
+
+        // Grafik oluşturma fonksiyonu
+        function createChart(canvasId, data, label) {
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            return new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['1', '2', '3', '4', '5'],
+                    datasets: [{
+                        label: label,
+                        data: data,
+                        backgroundColor: colors.bar,
+                        hoverBackgroundColor: colors.hover,
+                        borderColor: colors.border,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+
+        // Grafikleri oluştur
+        document.addEventListener('DOMContentLoaded', function() {
+            createChart('girisKolayligiChart', @Html.Raw(Json.Serialize(ViewBag.GirisKolayligiDagilimi)), 'Giriş Kolaylığı');
+            createChart('randevuIslemiChart', @Html.Raw(Json.Serialize(ViewBag.RandevuIslemiDagilimi)), 'Randevu İşlemi');
+            createChart('performansChart', @Html.Raw(Json.Serialize(ViewBag.PerformansDagilimi)), 'Performans');
+            createChart('arayuzChart', @Html.Raw(Json.Serialize(ViewBag.ArayuzDagilimi)), 'Arayüz');
+            createChart('memnuniyetChart', @Html.Raw(Json.Serialize(ViewBag.MemnuniyetDagilimi)), 'Memnuniyet');
+            createChart('oneriChart', @Html.Raw(Json.Serialize(ViewBag.OneriDagilimi)), 'Öneri');
+        });
+    </script>
+} 

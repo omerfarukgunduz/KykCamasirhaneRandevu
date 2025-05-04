@@ -1,0 +1,549 @@
+@{
+    ViewData["Title"] = "Anket Sonuçları";
+    Layout = "_YoneticiLayout";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">Anket Sonuçları</h6>
+                    <div>
+                        <span class="badge bg-primary">Toplam Anket: @ViewBag.ToplamAnket</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Radar Chart - Çok Boyutlu Değerlendirme -->
+                        <div class="col-12 mb-4">
+                            <div class="card h-100">
+                                <div class="card-header">
+                                    <h6 class="m-0 font-weight-bold text-primary">Çok Boyutlu Değerlendirme</h6>
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="radarChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Giriş Kolaylığı - Bar Chart -->
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-header">
+                                    <h6 class="m-0 font-weight-bold text-primary">Sisteme Giriş Kolaylığı</h6>
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="girisKolayligiChart"></canvas>
+                                    <div class="mt-3" id="girisKolayligiYuzde"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Randevu İşlemi - Pie Chart -->
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-header">
+                                    <h6 class="m-0 font-weight-bold text-primary">Randevu İşlemi Kolaylığı</h6>
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="randevuIslemiChart"></canvas>
+                                    <div class="mt-3" id="randevuIslemiYuzde"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Performans - Stacked Bar Chart -->
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-header">
+                                    <h6 class="m-0 font-weight-bold text-primary">Sistem Performansı</h6>
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="performansChart"></canvas>
+                                    <div class="mt-3" id="performansYuzde"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Arayüz - Line Chart -->
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-header">
+                                    <h6 class="m-0 font-weight-bold text-primary">Arayüz ve Tasarım</h6>
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="arayuzChart"></canvas>
+                                    <div class="mt-3" id="arayuzYuzde"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Genel Memnuniyet - Doughnut Chart -->
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-header">
+                                    <h6 class="m-0 font-weight-bold text-primary">Genel Memnuniyet</h6>
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="memnuniyetChart"></canvas>
+                                    <div class="mt-3" id="memnuniyetYuzde"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Öneri - Polar Area Chart -->
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-header">
+                                    <h6 class="m-0 font-weight-bold text-primary">Öneri Puanı</h6>
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="oneriChart"></canvas>
+                                    <div class="mt-3" id="oneriYuzde"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .heatmap-cell {
+            text-align: center;
+            font-weight: bold;
+            color: white;
+            transition: background-color 0.3s;
+        }
+    </style>
+    <script>
+        // Grafik renkleri
+        const colors = {
+            bar: 'rgba(54, 162, 235, 0.8)',
+            pie: [
+                'rgba(255, 99, 132, 0.8)',
+                'rgba(54, 162, 235, 0.8)',
+                'rgba(255, 206, 86, 0.8)',
+                'rgba(75, 192, 192, 0.8)',
+                'rgba(153, 102, 255, 0.8)'
+            ],
+            radar: 'rgba(75, 192, 192, 0.2)',
+            radarBorder: 'rgba(75, 192, 192, 1)',
+            stacked: [
+                'rgba(255, 99, 132, 0.8)',
+                'rgba(54, 162, 235, 0.8)',
+                'rgba(255, 206, 86, 0.8)',
+                'rgba(75, 192, 192, 0.8)',
+                'rgba(153, 102, 255, 0.8)'
+            ],
+            bubble: [
+                'rgba(255, 99, 132, 0.6)',
+                'rgba(54, 162, 235, 0.6)',
+                'rgba(255, 206, 86, 0.6)',
+                'rgba(75, 192, 192, 0.6)',
+                'rgba(153, 102, 255, 0.6)'
+            ]
+        };
+
+        // Yüzde hesaplama fonksiyonu
+        function hesaplaYuzde(data) {
+            const toplam = data.reduce((a, b) => a + b, 0);
+            return data.map(value => ((value / toplam) * 100).toFixed(1) + '%');
+        }
+
+        // Ortalama hesaplama fonksiyonu
+        function hesaplaOrtalama(data) {
+            const toplam = data.reduce((a, b) => a + b, 0);
+            const agirlikliToplam = data.reduce((a, b, index) => a + (b * (index + 1)), 0);
+            return (agirlikliToplam / toplam).toFixed(1);
+        }
+
+        // Heatmap renk hesaplama
+        function getHeatmapColor(value, max) {
+            const intensity = value / max;
+            const hue = (1 - intensity) * 120; // 120 (yeşil) -> 0 (kırmızı)
+            return `hsl(${hue}, 70%, 50%)`;
+        }
+
+        // Yüzde gösterimi oluşturma
+        function yuzdeGoster(elementId, data, labels) {
+            const yuzdeler = hesaplaYuzde(data);
+            const html = data.map((value, index) => `
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span>${labels[index]}:</span>
+                    <div class="progress flex-grow-1 mx-2" style="height: 20px;">
+                        <div class="progress-bar bg-primary" role="progressbar" 
+                             style="width: ${yuzdeler[index]}" 
+                             aria-valuenow="${value}" 
+                             aria-valuemin="0" 
+                             aria-valuemax="${data.reduce((a, b) => a + b, 0)}">
+                            ${yuzdeler[index]}
+                        </div>
+                    </div>
+                    <span>(${value})</span>
+                </div>
+            `).join('');
+            document.getElementById(elementId).innerHTML = html;
+        }
+
+        // Ortalama puanı hesaplama ve gösterme fonksiyonu
+        function ortalamaGoster(elementId, data, renk) {
+            const ortalama = data.reduce((a, b, i) => a + (b * (i + 1)), 0) / data.reduce((a, b) => a + b, 0);
+            const yuzde = ((ortalama / 5) * 100).toFixed(1);
+            
+            const card = document.querySelector(`#${elementId}`).closest('.card');
+            const ortalamaDiv = document.createElement('div');
+            ortalamaDiv.className = 'text-center mt-3';
+            ortalamaDiv.innerHTML = `
+                <div class="h4 mb-0 font-weight-bold text-${renk}">${yuzde}</div>
+                <div class="small text-muted">Ortalama Puan (100 üzerinden)</div>
+                <div class="progress mt-2" style="height: 10px;">
+                    <div class="progress-bar bg-${renk}" role="progressbar" 
+                         style="width: ${yuzde}%" 
+                         aria-valuenow="${yuzde}" 
+                         aria-valuemin="0" 
+                         aria-valuemax="100">
+                    </div>
+                </div>
+            `;
+            card.querySelector('.card-body').appendChild(ortalamaDiv);
+        }
+
+        // Grafikleri oluştur
+        document.addEventListener('DOMContentLoaded', function() {
+            const girisData = @Html.Raw(Json.Serialize(ViewBag.GirisKolayligiDagilimi));
+            const randevuData = @Html.Raw(Json.Serialize(ViewBag.RandevuIslemiDagilimi));
+            const performansData = @Html.Raw(Json.Serialize(ViewBag.PerformansDagilimi));
+            const arayuzData = @Html.Raw(Json.Serialize(ViewBag.ArayuzDagilimi));
+            const memnuniyetData = @Html.Raw(Json.Serialize(ViewBag.MemnuniyetDagilimi));
+            const oneriData = @Html.Raw(Json.Serialize(ViewBag.OneriDagilimi));
+
+            // Her kategori için özel etiketler
+            const girisLabels = ['Çok Zor', 'Zor', 'Orta', 'Kolay', 'Çok Kolay'];
+            const randevuLabels = ['Çok Zor', 'Zor', 'Orta', 'Kolay', 'Çok Kolay'];
+            const performansLabels = ['Çok Yavaş', 'Yavaş', 'Orta', 'Hızlı', 'Çok Hızlı'];
+            const arayuzLabels = ['Çok Kötü', 'Kötü', 'Orta', 'İyi', 'Çok İyi'];
+            const memnuniyetLabels = ['Hiç Memnun Değilim', 'Memnun Değilim', 'Kararsızım', 'Memnunum', 'Çok Memnunum'];
+            const oneriLabels = ['Kesinlikle Önermem', 'Önermem', 'Kararsızım', 'Öneririm', 'Kesinlikle Öneririm'];
+
+            // Radar Chart - Çok Boyutlu Değerlendirme
+            new Chart(document.getElementById('radarChart'), {
+                type: 'radar',
+                data: {
+                    labels: ['Giriş Kolaylığı', 'Randevu İşlemi', 'Performans', 'Arayüz', 'Memnuniyet', 'Öneri'],
+                    datasets: [{
+                        label: 'Değerlendirme',
+                        data: [
+                            girisData.reduce((a, b, i) => a + b * (i + 1), 0) / girisData.reduce((a, b) => a + b, 0),
+                            randevuData.reduce((a, b, i) => a + b * (i + 1), 0) / randevuData.reduce((a, b) => a + b, 0),
+                            performansData.reduce((a, b, i) => a + b * (i + 1), 0) / performansData.reduce((a, b) => a + b, 0),
+                            arayuzData.reduce((a, b, i) => a + b * (i + 1), 0) / arayuzData.reduce((a, b) => a + b, 0),
+                            memnuniyetData.reduce((a, b, i) => a + b * (i + 1), 0) / memnuniyetData.reduce((a, b) => a + b, 0),
+                            oneriData.reduce((a, b, i) => a + b * (i + 1), 0) / oneriData.reduce((a, b) => a + b, 0)
+                        ],
+                        backgroundColor: colors.radar,
+                        borderColor: colors.radarBorder,
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 5
+                        }
+                    }
+                }
+            });
+
+            // Bar Chart - Giriş Kolaylığı
+            new Chart(document.getElementById('girisKolayligiChart'), {
+                type: 'bar',
+                data: {
+                    labels: girisLabels,
+                    datasets: [{
+                        label: 'Giriş Kolaylığı',
+                        data: girisData,
+                        backgroundColor: [
+                            'rgba(220, 53, 69, 0.8)',    // Çok Zor
+                            'rgba(255, 193, 7, 0.8)',    // Zor
+                            'rgba(108, 117, 125, 0.8)',  // Orta
+                            'rgba(40, 167, 69, 0.6)',    // Kolay
+                            'rgba(40, 167, 69, 0.8)'     // Çok Kolay
+                        ],
+                        borderColor: [
+                            'rgba(220, 53, 69, 1)',
+                            'rgba(255, 193, 7, 1)',
+                            'rgba(108, 117, 125, 1)',
+                            'rgba(40, 167, 69, 1)',
+                            'rgba(40, 167, 69, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { stepSize: 1 }
+                        }
+                    }
+                }
+            });
+
+            // Pie Chart - Randevu İşlemi
+            new Chart(document.getElementById('randevuIslemiChart'), {
+                type: 'pie',
+                data: {
+                    labels: randevuLabels,
+                    datasets: [{
+                        data: randevuData,
+                        backgroundColor: [
+                            'rgba(220, 53, 69, 0.8)',    // Çok Zor
+                            'rgba(255, 193, 7, 0.8)',    // Zor
+                            'rgba(108, 117, 125, 0.8)',  // Orta
+                            'rgba(40, 167, 69, 0.6)',    // Kolay
+                            'rgba(40, 167, 69, 0.8)'     // Çok Kolay
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            // Stacked Bar Chart - Performans
+            new Chart(document.getElementById('performansChart'), {
+                type: 'bar',
+                data: {
+                    labels: performansLabels,
+                    datasets: [{
+                        label: 'Performans',
+                        data: performansData,
+                        backgroundColor: [
+                            'rgba(220, 53, 69, 0.8)',    // Çok Yavaş
+                            'rgba(255, 193, 7, 0.8)',    // Yavaş
+                            'rgba(108, 117, 125, 0.8)',  // Orta
+                            'rgba(40, 167, 69, 0.6)',    // Hızlı
+                            'rgba(40, 167, 69, 0.8)'     // Çok Hızlı
+                        ],
+                        borderColor: [
+                            'rgba(220, 53, 69, 1)',
+                            'rgba(255, 193, 7, 1)',
+                            'rgba(108, 117, 125, 1)',
+                            'rgba(40, 167, 69, 1)',
+                            'rgba(40, 167, 69, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            stacked: true,
+                            ticks: { stepSize: 1 }
+                        },
+                        x: {
+                            stacked: true
+                        }
+                    }
+                }
+            });
+
+            // Bar Chart - Arayüz
+            new Chart(document.getElementById('arayuzChart'), {
+                type: 'bar',
+                data: {
+                    labels: arayuzLabels,
+                    datasets: [{
+                        label: 'Arayüz ve Tasarım',
+                        data: arayuzData,
+                        backgroundColor: [
+                            'rgba(220, 53, 69, 0.8)',    // Çok Kötü
+                            'rgba(255, 193, 7, 0.8)',    // Kötü
+                            'rgba(108, 117, 125, 0.8)',  // Orta
+                            'rgba(40, 167, 69, 0.6)',    // İyi
+                            'rgba(40, 167, 69, 0.8)'     // Çok İyi
+                        ],
+                        borderColor: [
+                            'rgba(220, 53, 69, 1)',
+                            'rgba(255, 193, 7, 1)',
+                            'rgba(108, 117, 125, 1)',
+                            'rgba(40, 167, 69, 1)',
+                            'rgba(40, 167, 69, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const value = context.raw;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((value / total) * 100).toFixed(1);
+                                    return `${value} kişi (${percentage}%)`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Doughnut Chart - Genel Memnuniyet
+            new Chart(document.getElementById('memnuniyetChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: memnuniyetLabels,
+                    datasets: [{
+                        data: memnuniyetData,
+                        backgroundColor: [
+                            'rgba(220, 53, 69, 0.8)',    // Hiç Memnun Değilim
+                            'rgba(255, 193, 7, 0.8)',    // Memnun Değilim
+                            'rgba(108, 117, 125, 0.8)',  // Kararsızım
+                            'rgba(40, 167, 69, 0.6)',    // Memnunum
+                            'rgba(40, 167, 69, 0.8)'     // Çok Memnunum
+                        ],
+                        borderColor: [
+                            'rgba(220, 53, 69, 1)',
+                            'rgba(255, 193, 7, 1)',
+                            'rgba(108, 117, 125, 1)',
+                            'rgba(40, 167, 69, 1)',
+                            'rgba(40, 167, 69, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 20
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const value = context.raw;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((value / total) * 100).toFixed(1);
+                                    return `${value} kişi (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Polar Area Chart - Öneri
+            new Chart(document.getElementById('oneriChart'), {
+                type: 'polarArea',
+                data: {
+                    labels: oneriLabels,
+                    datasets: [{
+                        data: oneriData,
+                        backgroundColor: [
+                            'rgba(220, 53, 69, 0.7)',    // Kesinlikle Önermem
+                            'rgba(255, 193, 7, 0.7)',    // Önermem
+                            'rgba(108, 117, 125, 0.7)',  // Kararsızım
+                            'rgba(40, 167, 69, 0.6)',    // Öneririm
+                            'rgba(40, 167, 69, 0.8)'     // Kesinlikle Öneririm
+                        ],
+                        borderColor: [
+                            'rgba(220, 53, 69, 1)',
+                            'rgba(255, 193, 7, 1)',
+                            'rgba(108, 117, 125, 1)',
+                            'rgba(40, 167, 69, 1)',
+                            'rgba(40, 167, 69, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 20
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const value = context.raw;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((value / total) * 100).toFixed(1);
+                                    return `${value} kişi (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Ortalama puanları göster
+            ortalamaGoster('girisKolayligiChart', girisData, 'primary');
+            ortalamaGoster('randevuIslemiChart', randevuData, 'info');
+            ortalamaGoster('performansChart', performansData, 'warning');
+            ortalamaGoster('arayuzChart', arayuzData, 'success');
+            ortalamaGoster('memnuniyetChart', memnuniyetData, 'danger');
+            ortalamaGoster('oneriChart', oneriData, 'secondary');
+
+            // Heatmap Table
+            const maxValue = Math.max(
+                ...memnuniyetData,
+                ...oneriData
+            );
+
+            document.querySelectorAll('.heatmap-cell').forEach(cell => {
+                const value = parseInt(cell.dataset.value);
+                cell.style.backgroundColor = getHeatmapColor(value, maxValue);
+                cell.textContent = value;
+            });
+
+            // Ortalamaları hesapla ve göster
+            document.getElementById('memnuniyetOrtalama').textContent = hesaplaOrtalama(memnuniyetData);
+            document.getElementById('oneriOrtalama').textContent = hesaplaOrtalama(oneriData);
+
+            // Yüzde gösterimlerini oluştur
+            yuzdeGoster('girisKolayligiYuzde', girisData, girisLabels);
+            yuzdeGoster('randevuIslemiYuzde', randevuData, randevuLabels);
+            yuzdeGoster('performansYuzde', performansData, performansLabels);
+            yuzdeGoster('arayuzYuzde', arayuzData, arayuzLabels);
+            yuzdeGoster('memnuniyetYuzde', memnuniyetData, memnuniyetLabels);
+            yuzdeGoster('oneriYuzde', oneriData, oneriLabels);
+        });
+    </script>
+} 

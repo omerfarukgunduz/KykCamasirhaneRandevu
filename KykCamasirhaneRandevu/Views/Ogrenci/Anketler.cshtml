@@ -1,0 +1,225 @@
+@{
+    ViewData["Title"] = "Anket Değerlendirme";
+    Layout = "_OgrenciLayout";
+}
+
+<div class="container-fluid">
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Memnuniyet Anketi</h6>
+        </div>
+        <div class="card-body">
+            <form asp-action="AnketDegerlendir" method="post">
+                <div class="mb-4">
+                    <label class="form-label">Sisteme giriş yaparken herhangi bir zorluk yaşadınız mı?</label>
+                    <div class="rating-options">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="GirisKolayligiPuani" id="giris1" value="1" required>
+                            <label class="form-check-label" for="giris1">1</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="GirisKolayligiPuani" id="giris2" value="2">
+                            <label class="form-check-label" for="giris2">2</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="GirisKolayligiPuani" id="giris3" value="3">
+                            <label class="form-check-label" for="giris3">3</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="GirisKolayligiPuani" id="giris4" value="4">
+                            <label class="form-check-label" for="giris4">4</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="GirisKolayligiPuani" id="giris5" value="5">
+                            <label class="form-check-label" for="giris5">5</label>
+                        </div>
+                    </div>
+                    <small class="text-muted">1: Çok Zorlandım - 5: Hiç Zorlanmadım</small>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label">Randevu alma işlemi sizin için ne kadar kolaydı?</label>
+                    <div class="rating-options">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="RandevuIslemiPuani" id="randevu1" value="1" required>
+                            <label class="form-check-label" for="randevu1">1</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="RandevuIslemiPuani" id="randevu2" value="2">
+                            <label class="form-check-label" for="randevu2">2</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="RandevuIslemiPuani" id="randevu3" value="3">
+                            <label class="form-check-label" for="randevu3">3</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="RandevuIslemiPuani" id="randevu4" value="4">
+                            <label class="form-check-label" for="randevu4">4</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="RandevuIslemiPuani" id="randevu5" value="5">
+                            <label class="form-check-label" for="randevu5">5</label>
+                        </div>
+                    </div>
+                    <small class="text-muted">1: Çok Zor - 5: Çok Kolay</small>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label">Sistemin genel performansını nasıl değerlendirirsiniz?</label>
+                    <div class="rating-options">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="PerformansPuani" id="performans1" value="1" required>
+                            <label class="form-check-label" for="performans1">1</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="PerformansPuani" id="performans2" value="2">
+                            <label class="form-check-label" for="performans2">2</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="PerformansPuani" id="performans3" value="3">
+                            <label class="form-check-label" for="performans3">3</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="PerformansPuani" id="performans4" value="4">
+                            <label class="form-check-label" for="performans4">4</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="PerformansPuani" id="performans5" value="5">
+                            <label class="form-check-label" for="performans5">5</label>
+                        </div>
+                    </div>
+                    <small class="text-muted">1: Çok Yavaş - 5: Çok Hızlı</small>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label">Sistemin arayüzü ve tasarımı hakkında ne düşünüyorsunuz?</label>
+                    <div class="rating-options">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="ArayuzPuani" id="arayuz1" value="1" required>
+                            <label class="form-check-label" for="arayuz1">1</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="ArayuzPuani" id="arayuz2" value="2">
+                            <label class="form-check-label" for="arayuz2">2</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="ArayuzPuani" id="arayuz3" value="3">
+                            <label class="form-check-label" for="arayuz3">3</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="ArayuzPuani" id="arayuz4" value="4">
+                            <label class="form-check-label" for="arayuz4">4</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="ArayuzPuani" id="arayuz5" value="5">
+                            <label class="form-check-label" for="arayuz5">5</label>
+                        </div>
+                    </div>
+                    <small class="text-muted">1: Çok Kötü - 5: Çok İyi</small>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label">Genel olarak sistemden memnun musunuz?</label>
+                    <div class="rating-options">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="GenelMemnuniyetPuani" id="memnuniyet1" value="1" required>
+                            <label class="form-check-label" for="memnuniyet1">1</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="GenelMemnuniyetPuani" id="memnuniyet2" value="2">
+                            <label class="form-check-label" for="memnuniyet2">2</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="GenelMemnuniyetPuani" id="memnuniyet3" value="3">
+                            <label class="form-check-label" for="memnuniyet3">3</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="GenelMemnuniyetPuani" id="memnuniyet4" value="4">
+                            <label class="form-check-label" for="memnuniyet4">4</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="GenelMemnuniyetPuani" id="memnuniyet5" value="5">
+                            <label class="form-check-label" for="memnuniyet5">5</label>
+                        </div>
+                    </div>
+                    <small class="text-muted">1: Hiç Memnun Değilim - 5: Çok Memnunum</small>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label">Bu sistemi başkalarına önerir misiniz?</label>
+                    <div class="rating-options">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="OneriPuani" id="oneri1" value="1" required>
+                            <label class="form-check-label" for="oneri1">1</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="OneriPuani" id="oneri2" value="2">
+                            <label class="form-check-label" for="oneri2">2</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="OneriPuani" id="oneri3" value="3">
+                            <label class="form-check-label" for="oneri3">3</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="OneriPuani" id="oneri4" value="4">
+                            <label class="form-check-label" for="oneri4">4</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="OneriPuani" id="oneri5" value="5">
+                            <label class="form-check-label" for="oneri5">5</label>
+                        </div>
+                    </div>
+                    <small class="text-muted">1: Kesinlikle Önermem - 5: Kesinlikle Öneririm</small>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-send"></i> Değerlendirmeyi Gönder
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .rating-options {
+        margin: 10px 0;
+    }
+
+    .form-check-inline {
+        margin-right: 15px;
+    }
+
+    .form-check-input {
+        cursor: pointer;
+    }
+
+    .form-check-label {
+        cursor: pointer;
+        font-weight: 500;
+        padding: 5px 10px;
+        border-radius: 4px;
+        transition: all 0.2s;
+    }
+
+    .form-check-input:checked + .form-check-label {
+        background-color: #3498db;
+        color: white;
+    }
+
+    .form-label {
+        font-weight: 500;
+        margin-bottom: 10px;
+    }
+
+    .text-muted {
+        font-size: 0.85rem;
+    }
+</style> 

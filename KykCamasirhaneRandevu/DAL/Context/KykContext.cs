@@ -33,6 +33,35 @@ namespace KykCamasirhaneRandevu.DAL.Context
                 .WithMany()
                 .HasForeignKey(m => m.OgrenciID)
                 .OnDelete(DeleteBehavior.SetNull);
+
+            // Anket tablosu için konfigürasyon
+            modelBuilder.Entity<Anket>()
+                .ToTable("Anketler")
+                .HasKey(a => a.AnketId);
+
+            modelBuilder.Entity<Anket>()
+                .Property(a => a.GirisKolayligiPuani)
+                .IsRequired();
+
+            modelBuilder.Entity<Anket>()
+                .Property(a => a.RandevuIslemiPuani)
+                .IsRequired();
+
+            modelBuilder.Entity<Anket>()
+                .Property(a => a.PerformansPuani)
+                .IsRequired();
+
+            modelBuilder.Entity<Anket>()
+                .Property(a => a.ArayuzPuani)
+                .IsRequired();
+
+            modelBuilder.Entity<Anket>()
+                .Property(a => a.GenelMemnuniyetPuani)
+                .IsRequired();
+
+            modelBuilder.Entity<Anket>()
+                .Property(a => a.OneriPuani)
+                .IsRequired();
         }
     }
 }

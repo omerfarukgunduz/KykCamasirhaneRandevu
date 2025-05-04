@@ -8,6 +8,8 @@ using Microsoft.Extensions.Configuration;
 using System.IO;
 using KykCamasirhaneRandevu.Models;
 using System.Collections.Generic;
+using System.Linq.Expressions;
+using System.Linq;
 
 namespace KykCamasirhaneRandevu.Controllers
 {
@@ -574,6 +576,153 @@ namespace KykCamasirhaneRandevu.Controllers
                 TempData["SuccessMessage"] = $"Ceza süresi {model.Dakika} dakika olarak ayarlandı.";
                 return RedirectToAction(nameof(CezaSuresiAyarla));
             }
+            return View(model);
+        }
+
+        public IActionResult Anketler()
+        {
+            // Toplam anket sayısı
+            ViewBag.ToplamAnket = _context.Anketler.Count();
+
+            // Her bir kategorideki puanların dağılımını hesapla
+            ViewBag.GirisKolayligiDagilimi = GetPuanDagilimi(a => a.GirisKolayligiPuani);
+            ViewBag.RandevuIslemiDagilimi = GetPuanDagilimi(a => a.RandevuIslemiPuani);
+            ViewBag.PerformansDagilimi = GetPuanDagilimi(a => a.PerformansPuani);
+            ViewBag.ArayuzDagilimi = GetPuanDagilimi(a => a.ArayuzPuani);
+            ViewBag.MemnuniyetDagilimi = GetPuanDagilimi(a => a.GenelMemnuniyetPuani);
+            ViewBag.OneriDagilimi = GetPuanDagilimi(a => a.OneriPuani);
+
+            return View();
+        }
+
+        private int[] GetPuanDagilimi(Func<Anket, int> puanSelector)
+        {
+            var dagilim = new int[5];
+            var anketler = _context.Anketler.ToList();
+
+            foreach (var anket in anketler)
+            {
+                var puan = puanSelector(anket);
+                if (puan >= 1 && puan <= 5)
+                {
+                    dagilim[puan - 1]++;
+                }
+            }
+
+            return dagilim;
+        }
+
+        public async Task<IActionResult> Dashboard()
+        {
+            var bugun = DateTime.Today;
+            var model = new DashboardViewModel();
+
+            // Toplam Öğrenci Sayısı
+            model.ToplamOgrenci = await _context.Ogrenciler.CountAsync();
+
+            // Toplam Randevu Sayısı
+            model.ToplamRandevu = await _context.Randevular.CountAsync();
+
+            // Bugünkü Randevu Sayısı
+            model.BugunkuRandevu = await _context.Randevular.CountAsync(r => r.RandevuTarihi.Date == bugun);
+
+            // En Çok Randevu Alan Öğrenci
+            var enCokRandevuAlan = await _context.Randevular
+                .GroupBy(r => r.OgrenciID)
+                .Select(g => new
+                {
+                    OgrenciID = g.Key,
+                    Toplam = g.Count()
+                })
+                .OrderByDescending(x => x.Toplam)
+                .FirstOrDefaultAsync();
+
+            if (enCokRandevuAlan != null)
+            {
+                var ogrenci = await _context.Ogrenciler.FindAsync(enCokRandevuAlan.OgrenciID);
+                if (ogrenci != null)
+                {
+                    model.EnCokRandevuAlan = ogrenci.OgrenciAdSoyad;
+                    model.EnCokRandevuSayisi = enCokRandevuAlan.Toplam;
+                }
+            }
+
+            // Makinelerin Kullanım Durumu
+            model.MakineKullanimListesi = await _context.Randevular
+                .GroupBy(r => r.MakineNo)
+                .Select(g => new MakineKullanimViewModel
+                {
+                    MakineNo = g.Key,
+                    KullanimSayisi = g.Count()
+                })
+                .OrderBy(x => x.MakineNo)
+                .ToListAsync();
+
+            model.ToplamMakineSayisi = 35; // Toplam makine sayısı
+            model.KullanilanMakineSayisi = model.MakineKullanimListesi.Count;
+
+            // Aktif Ceza Alan Öğrenci Sayısı
+            model.CezaAlanOgrenci = await _context.Ogrenciler.CountAsync(o => o.CezaDurumu);
+
+            // Kurutma Seçeneği İstatistikleri
+            model.KurutmaIstatistikleri = await _context.Randevular
+                .GroupBy(r => r.Kurutma)
+                .Select(g => new KurutmaIstatistikViewModel
+                {
+                    Kurutma = g.Key,
+                    Sayi = g.Count()
+                })
+                .ToListAsync();
+
+            model.KurutmaSecildi = model.KurutmaIstatistikleri.FirstOrDefault(x => x.Kurutma)?.Sayi ?? 0;
+            model.KurutmaSecilmedi = model.KurutmaIstatistikleri.FirstOrDefault(x => !x.Kurutma)?.Sayi ?? 0;
+
+            // Günlük Kullanım İstatistikleri
+            var son7Gun = Enumerable.Range(0, 7)
+                .Select(i => DateTime.Today.AddDays(-i))
+                .ToList();
+
+            // Önce veritabanından ham verileri al
+            var gunlukKullanimHam = await _context.Randevular
+                .Where(r => r.RandevuTarihi.Date >= son7Gun.Last() && r.RandevuTarihi.Date <= son7Gun.First())
+                .GroupBy(r => r.RandevuTarihi.Date)
+                .Select(g => new
+                {
+                    Tarih = g.Key,
+                    RandevuSayisi = g.Count()
+                })
+                .ToListAsync();
+
+            // Sonra client tarafında formatla
+            model.GunlukKullanimListesi = gunlukKullanimHam
+                .Select(g => new GunlukKullanimViewModel
+                {
+                    Gun = g.Tarih.ToString("dd MMMM"),
+                    RandevuSayisi = g.RandevuSayisi
+                })
+                .ToList();
+
+            // Eksik günleri 0 değeri ile doldur
+            var tumGunler = son7Gun
+                .Select(g => new GunlukKullanimViewModel
+                {
+                    Gun = g.ToString("dd MMMM"),
+                    RandevuSayisi = 0
+                })
+                .ToList();
+
+            foreach (var gun in tumGunler)
+            {
+                if (!model.GunlukKullanimListesi.Any(x => x.Gun == gun.Gun))
+                {
+                    model.GunlukKullanimListesi.Add(gun);
+                }
+            }
+
+            model.GunlukKullanimListesi = model.GunlukKullanimListesi
+                .OrderBy(x => DateTime.ParseExact(x.Gun, "dd MMMM", null))
+                .ToList();
+
             return View(model);
         }
     }

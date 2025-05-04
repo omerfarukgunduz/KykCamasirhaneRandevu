@@ -1,0 +1,263 @@
+@model KykCamasirhaneRandevu.Models.DashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "_YoneticiLayout";
+}
+
+<div class="container-fluid">
+    <!-- İstatistik Kartları -->
+    <div class="row">
+        <!-- Toplam Öğrenci -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Toplam Öğrenci</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.ToplamOgrenci</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-users fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toplam Randevu -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Toplam Randevu</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.ToplamRandevu</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bugünkü Randevu -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Bugünkü Randevu</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.BugunkuRandevu</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar-day fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cezalı Öğrenci -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Cezalı Öğrenci</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.CezaAlanOgrenci</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Grafikler ve Detaylar -->
+    <div class="row">
+        <!-- Günlük Kullanım Grafiği -->
+        <div class="col-xl-12 col-lg-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Son 7 Günlük Kullanım Yoğunluğu</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-area">
+                        <canvas id="gunlukKullanimChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Makine Kullanım Grafiği -->
+        <div class="col-xl-8 col-lg-7">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Makine Kullanım İstatistikleri</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-bar">
+                        <canvas id="makineKullanimChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Kurutma İstatistikleri -->
+        <div class="col-xl-4 col-lg-5">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Kurutma İstatistikleri</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-pie pt-4">
+                        <canvas id="kurutmaIstatistikChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detaylı Bilgiler -->
+    <div class="row">
+        <!-- En Çok Randevu Alan Öğrenci -->
+        <div class="col-xl-6 col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">En Çok Randevu Alan Öğrenci</h6>
+                </div>
+                <div class="card-body">
+                    @if (!string.IsNullOrEmpty(Model.EnCokRandevuAlan))
+                    {
+                        <div class="text-center">
+                            <h4 class="mb-3">@Model.EnCokRandevuAlan</h4>
+                            <div class="h2 mb-0 font-weight-bold text-primary">@Model.EnCokRandevuSayisi</div>
+                            <div class="text-muted">Toplam Randevu</div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Makine Kullanım Özeti -->
+        <div class="col-xl-6 col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Makine Kullanım Özeti</h6>
+                </div>
+                <div class="card-body">
+                    <div class="text-center">
+                        <div class="h2 mb-0 font-weight-bold text-info">@Model.KullanilanMakineSayisi / @Model.ToplamMakineSayisi</div>
+                        <div class="text-muted">Kullanılan / Toplam Makine</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Günlük Kullanım Grafiği
+        var gunlukKullanimCtx = document.getElementById('gunlukKullanimChart').getContext('2d');
+        var gunlukKullanimChart = new Chart(gunlukKullanimCtx, {
+            type: 'line',
+            data: {
+                labels: @Html.Raw(Json.Serialize(Model.GunlukKullanimListesi.Select(x => x.Gun))),
+                datasets: [{
+                    label: 'Günlük Randevu Sayısı',
+                    data: @Html.Raw(Json.Serialize(Model.GunlukKullanimListesi.Select(x => x.RandevuSayisi))),
+                    backgroundColor: 'rgba(78, 115, 223, 0.05)',
+                    borderColor: 'rgba(78, 115, 223, 1)',
+                    pointRadius: 3,
+                    pointBackgroundColor: 'rgba(78, 115, 223, 1)',
+                    pointBorderColor: 'rgba(78, 115, 223, 1)',
+                    pointHoverRadius: 5,
+                    pointHoverBackgroundColor: 'rgba(78, 115, 223, 1)',
+                    pointHoverBorderColor: 'rgba(78, 115, 223, 1)',
+                    pointHitRadius: 10,
+                    pointBorderWidth: 2,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                }
+            }
+        });
+
+        // Makine Kullanım Grafiği
+        var makineKullanimCtx = document.getElementById('makineKullanimChart').getContext('2d');
+        var makineKullanimChart = new Chart(makineKullanimCtx, {
+            type: 'bar',
+            data: {
+                labels: @Html.Raw(Json.Serialize(Model.MakineKullanimListesi.Select(x => "Makine " + x.MakineNo))),
+                datasets: [{
+                    label: 'Kullanım Sayısı',
+                    data: @Html.Raw(Json.Serialize(Model.MakineKullanimListesi.Select(x => x.KullanimSayisi))),
+                    backgroundColor: 'rgba(78, 115, 223, 0.8)',
+                    borderColor: 'rgba(78, 115, 223, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                }
+            }
+        });
+
+        // Kurutma İstatistikleri Grafiği
+        var kurutmaIstatistikCtx = document.getElementById('kurutmaIstatistikChart').getContext('2d');
+        var kurutmaIstatistikChart = new Chart(kurutmaIstatistikCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Kurutma İsteyenler', 'Kurutma İstemeyenler'],
+                datasets: [{
+                    data: [@Model.KurutmaSecildi, @Model.KurutmaSecilmedi],
+                    backgroundColor: ['rgba(40, 167, 69, 0.8)', 'rgba(108, 117, 125, 0.8)'],
+                    borderColor: ['rgba(40, 167, 69, 1)', 'rgba(108, 117, 125, 1)'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    </script>
+} 
