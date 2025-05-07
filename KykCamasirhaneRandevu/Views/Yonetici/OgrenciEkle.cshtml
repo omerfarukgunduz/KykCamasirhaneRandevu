@@ -6,24 +6,32 @@
 @model KykCamasirhaneRandevu.DAL.Entities.Ogrenci
 
 <div class="container-fluid">
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
     <div class="card shadow mb-4">
         <div class="card-header py-3">
             <h6 class="m-0 font-weight-bold text-primary">Yeni Öğrenci Ekle</h6>
         </div>
         <div class="card-body">
-            <form asp-action="OgrenciEkle" method="post">
+            <form asp-controller="Yonetici" asp-action="OgrenciEkle" method="post">
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group mb-3">
                             <label asp-for="OgrenciTC" class="control-label">TC Numarası</label>
-                            <input asp-for="OgrenciTC" class="form-control" maxlength="11" />
+                            <input asp-for="OgrenciTC" class="form-control" maxlength="11" required />
                             <span asp-validation-for="OgrenciTC" class="text-danger"></span>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group mb-3">
                             <label asp-for="OgrenciAdSoyad" class="control-label">Ad Soyad</label>
-                            <input asp-for="OgrenciAdSoyad" class="form-control" />
+                            <input asp-for="OgrenciAdSoyad" class="form-control" required />
                             <span asp-validation-for="OgrenciAdSoyad" class="text-danger"></span>
                         </div>
                     </div>
@@ -32,14 +40,14 @@
                     <div class="col-md-6">
                         <div class="form-group mb-3">
                             <label asp-for="Oda_YatakNo" class="control-label">Oda/Yatak No</label>
-                            <input asp-for="Oda_YatakNo" class="form-control" />
+                            <input asp-for="Oda_YatakNo" class="form-control" required />
                             <span asp-validation-for="Oda_YatakNo" class="text-danger"></span>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group mb-3">
                             <label asp-for="OgrenciEposta" class="control-label">E-posta</label>
-                            <input asp-for="OgrenciEposta" class="form-control" type="email" autocomplete="off" />
+                            <input asp-for="OgrenciEposta" class="form-control" type="email" autocomplete="off" required />
                             <span asp-validation-for="OgrenciEposta" class="text-danger"></span>
                         </div>
                     </div>
@@ -48,17 +56,8 @@
                     <div class="col-md-6">
                         <div class="form-group mb-3">
                             <label asp-for="OgrenciSifre" class="control-label">Şifre</label>
-                            <input asp-for="OgrenciSifre" class="form-control" type="password" autocomplete="new-password" />
+                            <input asp-for="OgrenciSifre" class="form-control" type="password" autocomplete="new-password" required />
                             <span asp-validation-for="OgrenciSifre" class="text-danger"></span>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group mb-3">
-                            <label asp-for="CezaDurumu" class="control-label">Ceza Durumu</label>
-                            <div class="form-check">
-                                <input asp-for="CezaDurumu" class="form-check-input" type="checkbox" />
-                                <label class="form-check-label">Cezalı</label>
-                            </div>
                         </div>
                     </div>
                 </div>

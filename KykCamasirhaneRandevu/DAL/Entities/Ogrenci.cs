@@ -35,7 +35,7 @@ namespace KykCamasirhaneRandevu.DAL.Entities
 
         public DateTime? CezaBitisTarihi { get; set; }
 
-        public virtual ICollection<Randevu> Randevular { get; set; }
-        public virtual ICollection<Mesaj> Mesajlar { get; set; }
+        public virtual ICollection<Randevu>? Randevular { get; set; }
+        public virtual ICollection<Mesaj>? Mesajlar { get; set; }
     }
 }

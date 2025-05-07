@@ -70,6 +70,7 @@ namespace KykCamasirhaneRandevu.Controllers
             {
                 _context.Ogrenciler.Remove(ogrenci);
                 await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Öğrenci başarıyla silindi.";
             }
             return RedirectToAction(nameof(OgrenciListele));
         }
@@ -84,11 +85,13 @@ namespace KykCamasirhaneRandevu.Controllers
         {
             if (ModelState.IsValid)
             {
-                // Ceza süresini null olarak ayarla
+                // Ceza durumunu false ve ceza bitiş tarihini null olarak ayarla
+                ogrenci.CezaDurumu = false;
                 ogrenci.CezaBitisTarihi = null;
                 
                 _context.Ogrenciler.Add(ogrenci);
                 await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Öğrenci başarıyla eklendi.";
                 return RedirectToAction(nameof(OgrenciListele));
             }
             return View(ogrenci);
@@ -96,7 +99,10 @@ namespace KykCamasirhaneRandevu.Controllers
 
         public async Task<IActionResult> OgrenciDuzenle(int id)
         {
-            var ogrenci = await _context.Ogrenciler.FindAsync(id);
+            var ogrenci = await _context.Ogrenciler
+                .AsNoTracking()
+                .FirstOrDefaultAsync(o => o.OgrenciID == id);
+                
             if (ogrenci == null)
             {
                 return NotFound();
@@ -105,21 +111,38 @@ namespace KykCamasirhaneRandevu.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> OgrenciDuzenlePost(int id)
+        public async Task<IActionResult> OgrenciDuzenlePost(int id, Ogrenci ogrenci)
         {
-            var ogrenci = await _context.Ogrenciler.FindAsync(id);
-            if (ogrenci == null)
+            if (id != ogrenci.OgrenciID)
             {
                 return NotFound();
             }
 
-            if (await TryUpdateModelAsync<Ogrenci>(ogrenci, "",
-                o => o.OgrenciTC, o => o.OgrenciAdSoyad, o => o.OgrenciEposta, 
-                o => o.Oda_YatakNo, o => o.CezaDurumu))
+            // ModelState'den Randevular ve Mesajlar validasyonlarını kaldır
+            ModelState.Remove("Randevular");
+            ModelState.Remove("Mesajlar");
+
+            if (ModelState.IsValid)
             {
                 try
                 {
+                    var existingOgrenci = await _context.Ogrenciler.FindAsync(id);
+                    if (existingOgrenci == null)
+                    {
+                        return NotFound();
+                    }
+
+                    // Mevcut öğrencinin özelliklerini güncelle
+                    existingOgrenci.OgrenciTC = ogrenci.OgrenciTC;
+                    existingOgrenci.OgrenciAdSoyad = ogrenci.OgrenciAdSoyad;
+                    existingOgrenci.OgrenciEposta = ogrenci.OgrenciEposta;
+                    existingOgrenci.Oda_YatakNo = ogrenci.Oda_YatakNo;
+                    existingOgrenci.OgrenciSifre = ogrenci.OgrenciSifre;
+                    existingOgrenci.CezaDurumu = ogrenci.CezaDurumu;
+
+                    _context.Update(existingOgrenci);
                     await _context.SaveChangesAsync();
+                    TempData["SuccessMessage"] = "Öğrenci başarıyla güncellendi.";
                     return RedirectToAction(nameof(OgrenciListele));
                 }
                 catch (DbUpdateConcurrencyException)
