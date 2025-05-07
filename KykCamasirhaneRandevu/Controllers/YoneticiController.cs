@@ -417,8 +417,13 @@ namespace KykCamasirhaneRandevu.Controllers
                 // Öğrenciye ceza ver
                 if (randevu.Ogrenci != null)
                 {
-                    randevu.Ogrenci.CezaDurumu = true;
-                    _context.Update(randevu.Ogrenci);
+                    var cezaSuresi = await _context.CezaSuresi.FirstOrDefaultAsync();
+                    if (cezaSuresi != null)
+                    {
+                        randevu.Ogrenci.CezaDurumu = true;
+                        randevu.Ogrenci.CezaBitisTarihi = DateTime.Now.AddMinutes(cezaSuresi.CezaSuresiDakika);
+                        _context.Update(randevu.Ogrenci);
+                    }
                 }
                 
                 _context.Update(randevu);
@@ -447,6 +452,7 @@ namespace KykCamasirhaneRandevu.Controllers
                 _context.Randevular.Add(yeniRandevu);
             }
             await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "Randevular başarıyla eklendi.";
             return RedirectToAction(nameof(RandevuListele));
         }
 
@@ -560,19 +566,28 @@ namespace KykCamasirhaneRandevu.Controllers
             return RedirectToAction(nameof(Mesajlar));
         }
 
-        public IActionResult CezaSuresiAyarla()
+        public async Task<IActionResult> CezaSuresiAyarla()
         {
-            var dakika = HttpContext.Session.GetInt32("CezaSuresiDakika") ?? 2;
-            var model = new CezaSuresiViewModel { Dakika = dakika };
+            var cezaSuresi = await _context.CezaSuresi.FirstOrDefaultAsync();
+            var model = new CezaSuresiViewModel { Dakika = cezaSuresi?.CezaSuresiDakika ?? 0 };
             return View(model);
         }
 
         [HttpPost]
-        public IActionResult CezaSuresiAyarla(CezaSuresiViewModel model)
+        public async Task<IActionResult> CezaSuresiAyarla(CezaSuresiViewModel model)
         {
             if (ModelState.IsValid)
             {
-                HttpContext.Session.SetInt32("CezaSuresiDakika", model.Dakika);
+                var cezaSuresi = await _context.CezaSuresi.FirstOrDefaultAsync();
+                if (cezaSuresi == null)
+                {
+                    cezaSuresi = new CezaSuresi();
+                    _context.CezaSuresi.Add(cezaSuresi);
+                }
+                
+                cezaSuresi.CezaSuresiDakika = model.Dakika;
+                await _context.SaveChangesAsync();
+                
                 TempData["SuccessMessage"] = $"Ceza süresi {model.Dakika} dakika olarak ayarlandı.";
                 return RedirectToAction(nameof(CezaSuresiAyarla));
             }

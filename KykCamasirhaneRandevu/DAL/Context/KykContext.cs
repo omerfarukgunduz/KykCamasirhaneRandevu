@@ -15,53 +15,61 @@ namespace KykCamasirhaneRandevu.DAL.Context
         public DbSet<Duyuru> Duyurular { get; set; }
         public DbSet<Anket> Anketler { get; set; }
         public DbSet<Mesaj> Mesajlar { get; set; }
+        public DbSet<CezaSuresi> CezaSuresi { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
+            // Öğrenci entity konfigürasyonu
+            modelBuilder.Entity<Ogrenci>(entity =>
+            {
+                entity.HasKey(e => e.OgrenciID);
+                entity.Property(e => e.OgrenciAdSoyad).IsRequired().HasMaxLength(50);
+                entity.Property(e => e.OgrenciTC).IsRequired().HasMaxLength(11);
+                entity.Property(e => e.OgrenciSifre).IsRequired().HasMaxLength(50);
+                entity.Property(e => e.OgrenciEposta).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.Oda_YatakNo).IsRequired().HasMaxLength(20);
+            });
+
             // Randevu - Ogrenci ilişkisi
-            modelBuilder.Entity<Randevu>()
-                .HasOne(r => r.Ogrenci)
-                .WithMany(o => o.Randevular)
-                .HasForeignKey(r => r.OgrenciID)
-                .OnDelete(DeleteBehavior.SetNull);
+            modelBuilder.Entity<Randevu>(entity =>
+            {
+                entity.HasKey(e => e.RandevuID);
+                entity.HasOne(r => r.Ogrenci)
+                    .WithMany(o => o.Randevular)
+                    .HasForeignKey(r => r.OgrenciID)
+                    .OnDelete(DeleteBehavior.SetNull);
+            });
 
             // Mesaj - Ogrenci ilişkisi
-            modelBuilder.Entity<Mesaj>()
-                .HasOne(m => m.Ogrenci)
-                .WithMany()
-                .HasForeignKey(m => m.OgrenciID)
-                .OnDelete(DeleteBehavior.SetNull);
+            modelBuilder.Entity<Mesaj>(entity =>
+            {
+                entity.HasKey(e => e.MesajID);
+                entity.HasOne(m => m.Ogrenci)
+                    .WithMany(o => o.Mesajlar)
+                    .HasForeignKey(m => m.OgrenciID)
+                    .OnDelete(DeleteBehavior.SetNull);
+            });
 
             // Anket tablosu için konfigürasyon
-            modelBuilder.Entity<Anket>()
-                .ToTable("Anketler")
-                .HasKey(a => a.AnketId);
+            modelBuilder.Entity<Anket>(entity =>
+            {
+                entity.ToTable("Anketler");
+                entity.HasKey(a => a.AnketId);
+                entity.Property(a => a.GirisKolayligiPuani).IsRequired();
+                entity.Property(a => a.RandevuIslemiPuani).IsRequired();
+                entity.Property(a => a.PerformansPuani).IsRequired();
+                entity.Property(a => a.ArayuzPuani).IsRequired();
+                entity.Property(a => a.GenelMemnuniyetPuani).IsRequired();
+                entity.Property(a => a.OneriPuani).IsRequired();
+            });
 
-            modelBuilder.Entity<Anket>()
-                .Property(a => a.GirisKolayligiPuani)
-                .IsRequired();
-
-            modelBuilder.Entity<Anket>()
-                .Property(a => a.RandevuIslemiPuani)
-                .IsRequired();
-
-            modelBuilder.Entity<Anket>()
-                .Property(a => a.PerformansPuani)
-                .IsRequired();
-
-            modelBuilder.Entity<Anket>()
-                .Property(a => a.ArayuzPuani)
-                .IsRequired();
-
-            modelBuilder.Entity<Anket>()
-                .Property(a => a.GenelMemnuniyetPuani)
-                .IsRequired();
-
-            modelBuilder.Entity<Anket>()
-                .Property(a => a.OneriPuani)
-                .IsRequired();
+            // CezaSuresi entity konfigürasyonu
+            modelBuilder.Entity<CezaSuresi>(entity =>
+            {
+                entity.HasKey(e => e.CezaSuresiID);
+            });
         }
     }
 }
