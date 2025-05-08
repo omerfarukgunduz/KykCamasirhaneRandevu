@@ -1,0 +1,77 @@
+@{
+    ViewData["Title"] = "E-posta Ayarları";
+    Layout = "_YoneticiLayout";
+}
+
+@model KykCamasirhaneRandevu.DAL.Entities.EmailAyarlari
+
+<div class="container-fluid">
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">E-posta Ayarları</h6>
+        </div>
+        <div class="card-body">
+            <form asp-controller="Yonetici" asp-action="EmailAyarlari" method="post">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label asp-for="SmtpServer" class="control-label">SMTP Sunucu</label>
+                            <input asp-for="SmtpServer" class="form-control" required />
+                            <span asp-validation-for="SmtpServer" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label asp-for="SmtpPort" class="control-label">SMTP Port</label>
+                            <input asp-for="SmtpPort" class="form-control" type="number" required />
+                            <span asp-validation-for="SmtpPort" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label asp-for="SmtpUsername" class="control-label">SMTP Kullanıcı Adı</label>
+                            <input asp-for="SmtpUsername" class="form-control" required />
+                            <span asp-validation-for="SmtpUsername" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label asp-for="SmtpPassword" class="control-label">SMTP Şifre</label>
+                            <input asp-for="SmtpPassword" class="form-control" type="password" required />
+                            <span asp-validation-for="SmtpPassword" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="FromEmail" class="control-label">Gönderen E-posta</label>
+                    <input asp-for="FromEmail" class="form-control" type="email" required />
+                    <span asp-validation-for="FromEmail" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Kaydet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div> 

@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using KykCamasirhaneRandevu.DAL.Context;
+using KykCamasirhaneRandevu.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +16,10 @@ builder.Services.AddSession(options =>
 // DbContext yapılandırması
 builder.Services.AddDbContext<KykContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Servis kayıtları
+builder.Services.AddSingleton<EmailService>();
+builder.Services.AddHostedService<AppointmentReminderService>();
 
 var app = builder.Build();
 

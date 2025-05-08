@@ -261,6 +261,7 @@ namespace KykCamasirhaneRandevu.Controllers
             // Randevuyu öğrenciye ata
             randevu.OgrenciID = ogrenciId;
             randevu.Kurutma = kurutma;
+            randevu.Ogrenci = ogrenci;
             _context.Update(randevu);
             await _context.SaveChangesAsync();
 

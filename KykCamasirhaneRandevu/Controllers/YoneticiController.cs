@@ -763,5 +763,78 @@ namespace KykCamasirhaneRandevu.Controllers
 
             return View(model);
         }
+
+        public async Task<IActionResult> EmailAyarlari()
+        {
+            var ayarlar = await _context.EmailAyarlari.FirstOrDefaultAsync();
+            if (ayarlar == null)
+            {
+                ayarlar = new EmailAyarlari();
+            }
+            return View(ayarlar);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EmailAyarlari(EmailAyarlari ayarlar)
+        {
+            if (ModelState.IsValid)
+            {
+                var mevcutAyarlar = await _context.EmailAyarlari.FirstOrDefaultAsync();
+                if (mevcutAyarlar == null)
+                {
+                    ayarlar.SonGuncellemeTarihi = DateTime.Now;
+                    _context.EmailAyarlari.Add(ayarlar);
+                }
+                else
+                {
+                    mevcutAyarlar.SmtpServer = ayarlar.SmtpServer;
+                    mevcutAyarlar.SmtpPort = ayarlar.SmtpPort;
+                    mevcutAyarlar.SmtpUsername = ayarlar.SmtpUsername;
+                    mevcutAyarlar.SmtpPassword = ayarlar.SmtpPassword;
+                    mevcutAyarlar.FromEmail = ayarlar.FromEmail;
+                    mevcutAyarlar.SonGuncellemeTarihi = DateTime.Now;
+                }
+
+                await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "E-posta ayarları başarıyla güncellendi.";
+                return RedirectToAction(nameof(EmailAyarlari));
+            }
+            return View(ayarlar);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> HatirlatmaAyarlari()
+        {
+            var hatirlatmaAyari = await _context.RandevuHatirlatma.FirstOrDefaultAsync();
+            if (hatirlatmaAyari == null)
+            {
+                hatirlatmaAyari = new RandevuHatirlatma { HatirlatmaSuresiDakika = 5 };
+                _context.RandevuHatirlatma.Add(hatirlatmaAyari);
+                await _context.SaveChangesAsync();
+            }
+            return View(hatirlatmaAyari);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> HatirlatmaAyarlari(RandevuHatirlatma model)
+        {
+            if (ModelState.IsValid)
+            {
+                var hatirlatmaAyari = await _context.RandevuHatirlatma.FirstOrDefaultAsync();
+                if (hatirlatmaAyari == null)
+                {
+                    hatirlatmaAyari = new RandevuHatirlatma();
+                    _context.RandevuHatirlatma.Add(hatirlatmaAyari);
+                }
+
+                hatirlatmaAyari.HatirlatmaSuresiDakika = model.HatirlatmaSuresiDakika;
+                hatirlatmaAyari.SonGuncellemeTarihi = DateTime.Now;
+
+                await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Hatırlatma süresi başarıyla güncellendi.";
+                return RedirectToAction(nameof(HatirlatmaAyarlari));
+            }
+            return View(model);
+        }
     }
 } 

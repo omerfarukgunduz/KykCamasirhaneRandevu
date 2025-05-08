@@ -25,6 +25,8 @@ namespace KykCamasirhaneRandevu.DAL.Entities
 
         public bool? RandevuGerceklesti { get; set; } = null;
 
+        public bool HatirlatmaGonderildi { get; set; }
+
         public virtual Ogrenci? Ogrenci { get; set; }
     }
 } 
