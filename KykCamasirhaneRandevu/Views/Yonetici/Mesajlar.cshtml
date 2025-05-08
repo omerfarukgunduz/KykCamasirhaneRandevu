@@ -31,55 +31,64 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var mesaj in Model)
+                        @if (Model != null && Model.Any())
                         {
-                            <tr>
-                                <td>@mesaj.Ogrenci.OgrenciAdSoyad</td>
-                                <td>@mesaj.Baslik</td>
-                                <td>@mesaj.Tarih.ToString("dd.MM.yyyy HH:mm")</td>
-                                <td>
-                                    @if (mesaj.Okundu)
-                                    {
-                                        <span class="badge bg-success">Okundu</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge bg-warning">Okunmadı</span>
-                                    }
-                                </td>
-                                <td>
-                                    <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#mesajModal@(mesaj.MesajID)">
-                                        <i class="bi bi-eye"></i> Görüntüle
-                                    </button>
-                                    <a asp-action="MesajCevap" asp-route-id="@mesaj.MesajID" class="btn btn-primary btn-sm">
-                                        <i class="bi bi-reply"></i> Cevapla
-                                    </a>
-                                </td>
-                            </tr>
+                            @foreach (var mesaj in Model)
+                            {
+                                <tr>
+                                    <td>@(mesaj.Ogrenci?.OgrenciAdSoyad ?? "Bilinmiyor")</td>
+                                    <td>@mesaj.Baslik</td>
+                                    <td>@mesaj.Tarih.ToString("dd.MM.yyyy HH:mm")</td>
+                                    <td>
+                                        @if (mesaj.Okundu)
+                                        {
+                                            <span class="badge bg-success">Okundu</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-warning">Okunmadı</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#mesajModal@(mesaj.MesajID)">
+                                            <i class="bi bi-eye"></i> Görüntüle
+                                        </button>
+                                        <a asp-action="MesajCevap" asp-route-id="@mesaj.MesajID" class="btn btn-primary btn-sm">
+                                            <i class="bi bi-reply"></i> Cevapla
+                                        </a>
+                                    </td>
+                                </tr>
 
-                            <!-- Mesaj Detay Modal -->
-                            <div class="modal fade" id="mesajModal@(mesaj.MesajID)" tabindex="-1" aria-labelledby="mesajModalLabel@(mesaj.MesajID)" aria-hidden="true">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="mesajModalLabel@(mesaj.MesajID)">@mesaj.Baslik</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <p><strong>Gönderen:</strong> @mesaj.Ogrenci.OgrenciAdSoyad</p>
-                                            <p><strong>Tarih:</strong> @mesaj.Tarih.ToString("dd.MM.yyyy HH:mm")</p>
-                                            <p><strong>İçerik:</strong></p>
-                                            <p style="word-wrap: break-word; white-space: pre-wrap;">@mesaj.Icerik</p>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <a asp-action="MesajCevap" asp-route-id="@mesaj.MesajID" class="btn btn-primary">
-                                                <i class="bi bi-reply"></i> Cevapla
-                                            </a>
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+                                <!-- Mesaj Detay Modal -->
+                                <div class="modal fade" id="mesajModal@(mesaj.MesajID)" tabindex="-1" aria-labelledby="mesajModalLabel@(mesaj.MesajID)" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="mesajModalLabel@(mesaj.MesajID)">@mesaj.Baslik</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p><strong>Gönderen:</strong> @(mesaj.Ogrenci?.OgrenciAdSoyad ?? "Bilinmiyor")</p>
+                                                <p><strong>Tarih:</strong> @mesaj.Tarih.ToString("dd.MM.yyyy HH:mm")</p>
+                                                <p><strong>İçerik:</strong></p>
+                                                <p style="word-wrap: break-word; white-space: pre-wrap;">@mesaj.Icerik</p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <a asp-action="MesajCevap" asp-route-id="@mesaj.MesajID" class="btn btn-primary">
+                                                    <i class="bi bi-reply"></i> Cevapla
+                                                </a>
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="5" class="text-center">Henüz mesaj bulunmamaktadır.</td>
+                            </tr>
                         }
                     </tbody>
                 </table>

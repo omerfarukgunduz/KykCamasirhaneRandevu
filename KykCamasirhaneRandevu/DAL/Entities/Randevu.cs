@@ -19,7 +19,7 @@ namespace KykCamasirhaneRandevu.DAL.Entities
         [Range(1, 35, ErrorMessage = "Makine numarası 1-35 arasında olmalıdır.")]
         public int MakineNo { get; set; }
 
-        public bool Kurutma { get; set; } = true;
+        public bool? Kurutma { get; set; }
 
         public int TeslimeKalanSure { get; set; } = 180;
 

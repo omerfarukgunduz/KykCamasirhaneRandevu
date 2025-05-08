@@ -25,7 +25,6 @@
                         <tr>
                             <th>Konu</th>
                             <th>Tarih</th>
-                            <th>Durum</th>
                             <th>İşlemler</th>
                         </tr>
                     </thead>
@@ -35,16 +34,6 @@
                             <tr data-icerik="@mesaj.Icerik">
                                 <td>@mesaj.Baslik</td>
                                 <td>@mesaj.Tarih.ToString("dd.MM.yyyy HH:mm")</td>
-                                <td>
-                                    @if (mesaj.Okundu)
-                                    {
-                                        <span class="badge bg-success">Okundu</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge bg-warning">Okunmadı</span>
-                                    }
-                                </td>
                                 <td>
                                     <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#mesajModal@(mesaj.MesajID)">
                                         <i class="bi bi-eye"></i> Görüntüle

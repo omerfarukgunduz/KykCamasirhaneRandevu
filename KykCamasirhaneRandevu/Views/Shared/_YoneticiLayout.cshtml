@@ -64,7 +64,7 @@
         <!-- Sidebar -->
         <nav class="sidebar">
             <div class="p-3">
-                <h4 class="text-center mb-4">KYK Yönetim</h4>
+                <h4 class="text-center mb-4">KYK Çamaşırhane Yönetim</h4>
                 <hr>
                 <ul class="nav flex-column">
                     <li class="nav-item">
@@ -72,6 +72,13 @@
                             <i class="bi bi-calendar-check"></i> Randevu Yönetimi
                         </a>
                     </li>
+                      <li class="nav-item">
+                        <a class="nav-link" asp-controller="Yonetici" asp-action="GecmisRandevular">
+                            <i class="bi bi-clock-history"></i>
+                            <span>Geçmiş Randevular</span>
+                        </a>
+                    </li>
+
                     <li class="nav-item">
                         <a class="nav-link" asp-controller="Yonetici" asp-action="OgrenciListele">
                             <i class="bi bi-people"></i>
@@ -102,7 +109,7 @@
                     
                     <li class="nav-item">
                         <a class="nav-link" asp-controller="Yonetici" asp-action="Anketler">
-                            <i class="fas fa-poll-h"></i>
+                            <i class="bi bi-bar-chart"></i>
                             <span>Anketler</span>
                         </a>
                     </li>
@@ -118,22 +125,24 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" asp-controller="Yonetici" asp-action="CezaSuresiAyarla">
-                            <i class="fas fa-clock"></i>
+                            <i class="bi bi-clock-history"></i>
                             <span>Ceza Süresi Ayarla</span>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" asp-controller="Yonetici" asp-action="EmailAyarlari">
-                            <i class="fas fa-envelope"></i>
+                            <i class="bi bi-envelope"></i>
                             <span>E-posta Ayarları</span>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" asp-controller="Yonetici" asp-action="HatirlatmaAyarlari">
-                            <i class="fas fa-bell"></i>
+                            <i class="bi bi-bell"></i>
                             <span>Hatırlatma Ayarları</span>
                         </a>
                     </li>
+                    
+                  
                     <li class="nav-item">
                         <a class="nav-link text-danger" asp-controller="Yonetici" asp-action="Cikis">
                             <i class="bi bi-box-arrow-right"></i> Çıkış Yap

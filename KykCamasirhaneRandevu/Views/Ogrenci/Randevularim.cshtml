@@ -5,9 +5,9 @@
     Layout = "_OgrenciLayout";
 
     // Teslim zamanını hesaplayan yardımcı fonksiyon
-    string HesaplaTeslimZamani(DateTime randevuTarihi, bool kurutma)
+    string HesaplaTeslimZamani(DateTime randevuTarihi, bool? kurutma)
     {
-        if (kurutma)
+        if (kurutma == true)
         {
             return randevuTarihi.AddHours(3).ToString("dd.MM.yyyy HH:mm");
         }
@@ -62,7 +62,7 @@
                                 <td>@randevu.MakineNo</td>
                                 <td>@randevu.RandevuTarihi.ToString("dd.MM.yyyy HH:mm")</td>
                                 <td>@HesaplaTeslimZamani(randevu.RandevuTarihi, randevu.Kurutma)</td>
-                                <td>@(randevu.Kurutma ? "Evet" : "Hayır")</td>
+                                <td>@(randevu.Kurutma == null ? "Belirlenmedi" : (randevu.Kurutma.Value ? "Evet" : "Hayır"))</td>
                                 <td>
                                     <form asp-action="RandevuIptal" method="post" class="d-inline">
                                         <input type="hidden" name="id" value="@randevu.RandevuID" />
@@ -103,7 +103,7 @@
                                 <td>@randevu.MakineNo</td>
                                 <td>@randevu.RandevuTarihi.ToString("dd.MM.yyyy HH:mm")</td>
                                 <td>@HesaplaTeslimZamani(randevu.RandevuTarihi, randevu.Kurutma)</td>
-                                <td>@(randevu.Kurutma ? "Evet" : "Hayır")</td>
+                                <td>@(randevu.Kurutma == null ? "Belirlenmedi" : (randevu.Kurutma.Value ? "Evet" : "Hayır"))</td>
                                 <td>
                                     @if (randevu.RandevuGerceklesti == true)
                                     {

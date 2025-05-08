@@ -395,9 +395,12 @@ namespace KykCamasirhaneRandevu.Controllers
         {
             try
             {
+                var bugun = DateTime.Today;
                 var randevular = await _context.Randevular
                     .Include(r => r.Ogrenci)
-                    .OrderByDescending(r => r.RandevuTarihi)
+                    .Where(r => r.RandevuTarihi >= bugun)
+                    .OrderByDescending(r => r.OgrenciID != null) // Öğrenci adı dolu olanları önce getir
+                    .ThenBy(r => r.RandevuTarihi) // Sonra tarihe göre sırala
                     .ToListAsync();
 
                 // Debug için randevu sayısını logla
@@ -470,7 +473,7 @@ namespace KykCamasirhaneRandevu.Controllers
                 {
                     RandevuTarihi = randevu.RandevuTarihi,
                     MakineNo = i,
-                    Kurutma = true
+                    Kurutma = null
                 };
                 _context.Randevular.Add(yeniRandevu);
             }
@@ -712,8 +715,8 @@ namespace KykCamasirhaneRandevu.Controllers
                 })
                 .ToListAsync();
 
-            model.KurutmaSecildi = model.KurutmaIstatistikleri.FirstOrDefault(x => x.Kurutma)?.Sayi ?? 0;
-            model.KurutmaSecilmedi = model.KurutmaIstatistikleri.FirstOrDefault(x => !x.Kurutma)?.Sayi ?? 0;
+            model.KurutmaSecildi = model.KurutmaIstatistikleri.FirstOrDefault(x => x.Kurutma == true)?.Sayi ?? 0;
+            model.KurutmaSecilmedi = model.KurutmaIstatistikleri.FirstOrDefault(x => x.Kurutma == false)?.Sayi ?? 0;
 
             // Günlük Kullanım İstatistikleri
             var son7Gun = Enumerable.Range(0, 7)
@@ -835,6 +838,26 @@ namespace KykCamasirhaneRandevu.Controllers
                 return RedirectToAction(nameof(HatirlatmaAyarlari));
             }
             return View(model);
+        }
+
+        public async Task<IActionResult> GecmisRandevular()
+        {
+            try
+            {
+                var bugun = DateTime.Today;
+                var randevular = await _context.Randevular
+                    .Include(r => r.Ogrenci)
+                    .Where(r => r.RandevuTarihi < bugun)
+                    .OrderByDescending(r => r.RandevuTarihi)
+                    .ToListAsync();
+
+                return View(randevular);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"GecmisRandevular hatası: {ex.Message}");
+                throw;
+            }
         }
     }
 } 

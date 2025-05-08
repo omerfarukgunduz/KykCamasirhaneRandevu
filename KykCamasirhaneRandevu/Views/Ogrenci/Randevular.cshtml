@@ -45,8 +45,6 @@
                         <tr>
                             <th>Makine No</th>
                             <th>Randevu Tarihi</th>
-                            <th>Teslim Zamanı</th>
-                            <th>Kurutma</th>
                             <th>İşlemler</th>
                         </tr>
                     </thead>
@@ -56,8 +54,6 @@
                             <tr>
                                 <td>@randevu.MakineNo</td>
                                 <td>@randevu.RandevuTarihi.ToString("dd.MM.yyyy HH:mm")</td>
-                                <td>@HesaplaTeslimZamani(randevu.RandevuTarihi, randevu.Kurutma)</td>
-                                <td>@(randevu.Kurutma ? "Evet" : "Hayır")</td>
                                 <td>
                                     <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#randevuModal-@randevu.RandevuID">
                                         <i class="bi bi-calendar-plus"></i> Randevu Al

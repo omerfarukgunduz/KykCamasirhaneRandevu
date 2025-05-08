@@ -27,7 +27,7 @@ namespace KykCamasirhaneRandevu.Models
 
     public class KurutmaIstatistikViewModel
     {
-        public bool Kurutma { get; set; }
+        public bool? Kurutma { get; set; }
         public int Sayi { get; set; }
     }
 

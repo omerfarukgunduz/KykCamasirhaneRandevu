@@ -3,6 +3,8 @@ using KykCamasirhaneRandevu.DAL.Context;
 using KykCamasirhaneRandevu.DAL.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
+using KykCamasirhaneRandevu.Services;
 
 namespace KykCamasirhaneRandevu.Controllers
 {
@@ -17,6 +19,48 @@ namespace KykCamasirhaneRandevu.Controllers
 
         public IActionResult Login()
         {
+            return View();
+        }
+
+        public IActionResult SifreAl()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SifreAl(string eposta)
+        {
+            if (string.IsNullOrEmpty(eposta))
+            {
+                ViewBag.Error = "E-posta adresi boş bırakılamaz!";
+                return View();
+            }
+
+            var ogrenci = await _context.Ogrenciler
+                .FirstOrDefaultAsync(o => o.OgrenciEposta == eposta);
+
+            if (ogrenci == null)
+            {
+                ViewBag.Error = "Bu e-posta adresi ile kayıtlı öğrenci bulunamadı!";
+                return View();
+            }
+
+            try
+            {
+                var emailService = HttpContext.RequestServices.GetRequiredService<EmailService>();
+                var konu = "KYK Çamaşırhane Randevu - Şifre Hatırlatma";
+                var icerik = $"Sayın {ogrenci.OgrenciAdSoyad},<br><br>" +
+                            $"KYK Çamaşırhane Randevu sistemindeki şifreniz: {ogrenci.OgrenciSifre}<br><br>" +
+                            "İyi günler dileriz.";
+
+                await emailService.SendEmailAsync(eposta, konu, icerik);
+                ViewBag.Success = "Şifreniz e-posta adresinize gönderildi.";
+            }
+            catch (Exception)
+            {
+                ViewBag.Error = "E-posta gönderilirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.";
+            }
+
             return View();
         }
 
@@ -47,11 +91,18 @@ namespace KykCamasirhaneRandevu.Controllers
 
         public async Task<IActionResult> Randevular()
         {
+            var ogrenciId = HttpContext.Session.GetInt32("OgrenciID");
+            if (ogrenciId == null)
+            {
+                return RedirectToAction("Login");
+            }
+
+            var bugun = DateTime.Today;
             var randevular = await _context.Randevular
-                .Include(r => r.Ogrenci)
-                .Where(r => r.OgrenciID == null)
+                .Where(r => r.OgrenciID == null && r.RandevuTarihi >= bugun)
                 .OrderBy(r => r.RandevuTarihi)
                 .ToListAsync();
+
             return View(randevular);
         }
 
@@ -63,11 +114,12 @@ namespace KykCamasirhaneRandevu.Controllers
                 return RedirectToAction("Login");
             }
 
+            var bugun = DateTime.Today;
             var randevular = await _context.Randevular
-                .Include(r => r.Ogrenci)
-                .Where(r => r.OgrenciID == ogrenciId)
-                .OrderByDescending(r => r.RandevuTarihi)
+                .Where(r => r.OgrenciID == ogrenciId && r.RandevuTarihi >= bugun)
+                .OrderBy(r => r.RandevuTarihi)
                 .ToListAsync();
+
             return View(randevular);
         }
 
