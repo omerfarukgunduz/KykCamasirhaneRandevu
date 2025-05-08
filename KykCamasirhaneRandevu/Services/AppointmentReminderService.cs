@@ -68,9 +68,9 @@ namespace KykCamasirhaneRandevu.Services
                                     <html>
                                     <body style='font-family: Arial, sans-serif; line-height: 1.6; color: #333;'>
                                         <div style='max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px;'>
-                                            <h2 style='color: #2c3e50;'>Randevu Hatırlatması</h2>
+                                            <h2 style='color: #2c3e50;'>Çamaşırhane Randevu Hatırlatması</h2>
                                             <p>Sayın {randevu.Ogrenci.OgrenciAdSoyad},</p>
-                                            <p>Çamaşırhaneye randevunuz <strong>{hatirlatmaAyari.HatirlatmaSuresiDakika} dakika</strong> içinde başlayacaktır.</p>
+                                            <p>Çamaşırhaneye <strong> {randevu.RandevuTarihi:dd.MM.yyyy HH:mm}</strong> tarihinde randevunuz bulunmaktadır. Gelemeyecekseniz lütfen randevunuzu iptal etmeyi unutmayınız.</p>
                                             <p><strong>Randevu Detayları:</strong></p>
                                             <ul>
                                                 <li>Tarih: {randevu.RandevuTarihi:dd.MM.yyyy HH:mm}</li>
