@@ -18,5 +18,9 @@ namespace KykCamasirhaneRandevu.DAL.Entities
 
         [Required]
         public DateTime AnketTarihi { get; set; } = DateTime.Now;
+
+        public int? OgrenciID { get; set; }
+        [ForeignKey("OgrenciID")]
+        public virtual Ogrenci? Ogrenci { get; set; }
     }
 } 

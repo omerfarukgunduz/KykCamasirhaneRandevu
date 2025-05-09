@@ -65,6 +65,10 @@ namespace KykCamasirhaneRandevu.DAL.Context
                 entity.Property(a => a.ArayuzPuani).IsRequired();
                 entity.Property(a => a.GenelMemnuniyetPuani).IsRequired();
                 entity.Property(a => a.OneriPuani).IsRequired();
+                entity.HasOne(a => a.Ogrenci)
+                    .WithMany()
+                    .HasForeignKey(a => a.OgrenciID)
+                    .OnDelete(DeleteBehavior.SetNull);
             });
 
             // CezaSuresi entity konfigürasyonu

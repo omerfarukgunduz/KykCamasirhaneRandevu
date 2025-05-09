@@ -232,6 +232,22 @@ namespace KykCamasirhaneRandevu.Controllers
                 return RedirectToAction("Login");
             }
 
+            // Aylık anket kontrolü
+            var bugun = DateTime.Now;
+            var ayBasi = new DateTime(bugun.Year, bugun.Month, 1);
+            var aySonu = ayBasi.AddMonths(1).AddDays(-1);
+
+            var aylikAnketVarMi = await _context.Anketler
+                .AnyAsync(a => a.OgrenciID == ogrenciId && 
+                             a.AnketTarihi >= ayBasi && 
+                             a.AnketTarihi <= aySonu);
+
+            if (aylikAnketVarMi)
+            {
+                TempData["ErrorMessage"] = "Bu ay için zaten bir anket doldurdunuz. Bir sonraki ay tekrar deneyebilirsiniz.";
+                return RedirectToAction(nameof(Anketler));
+            }
+
             var anket = new Anket
             {
                 GirisKolayligiPuani = GirisKolayligiPuani,
@@ -240,7 +256,8 @@ namespace KykCamasirhaneRandevu.Controllers
                 ArayuzPuani = ArayuzPuani,
                 GenelMemnuniyetPuani = GenelMemnuniyetPuani,
                 OneriPuani = OneriPuani,
-                AnketTarihi = DateTime.Now
+                AnketTarihi = DateTime.Now,
+                OgrenciID = ogrenciId
             };
 
             _context.Anketler.Add(anket);
