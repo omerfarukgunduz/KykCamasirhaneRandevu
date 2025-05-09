@@ -46,6 +46,27 @@
             background: #2c3e50;
         }
 
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        .sidebar-close {
+            display: none;
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
         @@media (max-width: 768px) {
             .sidebar {
                 position: fixed;
@@ -56,14 +77,24 @@
             .sidebar.show {
                 transform: translateX(0);
             }
+            .sidebar-close {
+                display: block;
+            }
+            .sidebar-overlay.show {
+                display: block;
+            }
         }
     </style>
 </head>
 <body>
     <div class="wrapper d-flex">
+        <!-- Sidebar Overlay -->
+        <div class="sidebar-overlay"></div>
+
         <!-- Sidebar -->
         <nav class="sidebar">
             <div class="p-3">
+                <span class="sidebar-close">&times;</span>
                 <h4 class="text-center mb-4">KYK Çamaşırhane Yönetim</h4>
                 <hr>
                 <ul class="nav flex-column">
@@ -191,9 +222,19 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/localization/messages_tr.min.js"></script>
     <script>
         // Mobil menü toggle
-        document.querySelector('.navbar-toggler').addEventListener('click', function() {
-            document.querySelector('.sidebar').classList.toggle('show');
-        });
+        const sidebar = document.querySelector('.sidebar');
+        const overlay = document.querySelector('.sidebar-overlay');
+        const closeBtn = document.querySelector('.sidebar-close');
+        const toggleBtn = document.querySelector('.navbar-toggler');
+
+        function toggleSidebar() {
+            sidebar.classList.toggle('show');
+            overlay.classList.toggle('show');
+        }
+
+        toggleBtn.addEventListener('click', toggleSidebar);
+        closeBtn.addEventListener('click', toggleSidebar);
+        overlay.addEventListener('click', toggleSidebar);
 
         $.validator.setDefaults({
             messages: {
