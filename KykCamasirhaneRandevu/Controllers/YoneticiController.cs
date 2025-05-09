@@ -46,7 +46,7 @@ namespace KykCamasirhaneRandevu.Controllers
                 // Başarılı giriş
                 HttpContext.Session.SetString("YoneticiAdSoyad", yonetici.YoneticiAdSoyad);
                 HttpContext.Session.SetInt32("YoneticiID", yonetici.YoneticiID);
-                return RedirectToAction("OgrenciListele");
+                return RedirectToAction("RandevuListele");
             }
             else
             {
