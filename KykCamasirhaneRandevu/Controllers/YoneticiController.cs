@@ -399,18 +399,14 @@ namespace KykCamasirhaneRandevu.Controllers
                 var randevular = await _context.Randevular
                     .Include(r => r.Ogrenci)
                     .Where(r => r.RandevuTarihi >= bugun)
-                    .OrderByDescending(r => r.OgrenciID != null) // Öğrenci adı dolu olanları önce getir
+                    .OrderByDescending(r => r.OgrenciID != null) // Önce dolu randevular
                     .ThenBy(r => r.RandevuTarihi) // Sonra tarihe göre sırala
                     .ToListAsync();
-
-                // Debug için randevu sayısını logla
-                System.Diagnostics.Debug.WriteLine($"Toplam randevu sayısı: {randevular.Count}");
 
                 return View(randevular);
             }
             catch (Exception ex)
             {
-                // Hata durumunda logla
                 System.Diagnostics.Debug.WriteLine($"RandevuListele hatası: {ex.Message}");
                 throw;
             }
@@ -858,6 +854,127 @@ namespace KykCamasirhaneRandevu.Controllers
                 System.Diagnostics.Debug.WriteLine($"GecmisRandevular hatası: {ex.Message}");
                 throw;
             }
+        }
+
+        public async Task<IActionResult> RandevuSaatleri()
+        {
+            var randevuSaatleri = await _context.RandevuSaatleri
+                .OrderBy(r => r.Gun == DayOfWeek.Sunday ? 7 : (int)r.Gun) // Pazar'ı en sona al
+                .ThenBy(r => r.Saat)
+                .ToListAsync();
+
+            return View(randevuSaatleri);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> RandevuSaatiEkle(DayOfWeek gun, TimeSpan saat)
+        {
+            var randevuSaati = new RandevuSaati
+            {
+                Gun = gun,
+                Saat = saat,
+                Aktif = true
+            };
+
+            _context.RandevuSaatleri.Add(randevuSaati);
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Randevu saati başarıyla eklendi.";
+            return RedirectToAction(nameof(RandevuSaatleri));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> RandevuSaatiSil(int id)
+        {
+            var randevuSaati = await _context.RandevuSaatleri.FindAsync(id);
+            if (randevuSaati != null)
+            {
+                _context.RandevuSaatleri.Remove(randevuSaati);
+                await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Randevu saati başarıyla silindi.";
+            }
+            return RedirectToAction(nameof(RandevuSaatleri));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> RandevuSaatiDurumDegistir(int id)
+        {
+            var randevuSaati = await _context.RandevuSaatleri.FindAsync(id);
+            if (randevuSaati != null)
+            {
+                randevuSaati.Aktif = !randevuSaati.Aktif;
+                await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Randevu saati durumu güncellendi.";
+            }
+            return RedirectToAction(nameof(RandevuSaatleri));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> RandevulariOlustur()
+        {
+            var bugun = DateTime.Today;
+            var yarin = bugun.AddDays(1);
+            var randevuSaatleri = await _context.RandevuSaatleri
+                .Where(r => r.Aktif && r.Gun == yarin.DayOfWeek)
+                .ToListAsync();
+
+            foreach (var randevuSaati in randevuSaatleri)
+            {
+                for (int makineNo = 1; makineNo <= 35; makineNo++)
+                {
+                    var randevuTarihi = yarin.Date.Add(randevuSaati.Saat);
+                    var randevu = new Randevu
+                    {
+                        RandevuTarihi = randevuTarihi,
+                        MakineNo = makineNo,
+                        Kurutma = null
+                    };
+                    _context.Randevular.Add(randevu);
+                }
+            }
+
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "Yarın için randevular başarıyla oluşturuldu.";
+            return RedirectToAction(nameof(RandevuSaatleri));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> HaftalikRandevulariOlustur()
+        {
+            var bugun = DateTime.Today;
+            var yarin = bugun.AddDays(1);
+            var birHaftaSonra = yarin.AddDays(6); // 7 günlük periyot
+
+            // Aktif randevu saatlerini al
+            var randevuSaatleri = await _context.RandevuSaatleri
+                .Where(r => r.Aktif)
+                .ToListAsync();
+
+            // Her gün için randevuları oluştur
+            for (var tarih = yarin; tarih <= birHaftaSonra; tarih = tarih.AddDays(1))
+            {
+                // O güne ait randevu saatlerini filtrele
+                var gununSaatleri = randevuSaatleri.Where(r => r.Gun == tarih.DayOfWeek);
+
+                foreach (var randevuSaati in gununSaatleri)
+                {
+                    for (int makineNo = 1; makineNo <= 35; makineNo++)
+                    {
+                        var randevuTarihi = tarih.Date.Add(randevuSaati.Saat);
+                        var randevu = new Randevu
+                        {
+                            RandevuTarihi = randevuTarihi,
+                            MakineNo = makineNo,
+                            Kurutma = null
+                        };
+                        _context.Randevular.Add(randevu);
+                    }
+                }
+            }
+
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "Bir haftalık randevular başarıyla oluşturuldu.";
+            return RedirectToAction(nameof(RandevuSaatleri));
         }
     }
 } 

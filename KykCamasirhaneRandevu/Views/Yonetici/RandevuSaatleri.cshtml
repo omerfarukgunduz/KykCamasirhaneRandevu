@@ -1,0 +1,153 @@
+@model List<KykCamasirhaneRandevu.DAL.Entities.RandevuSaati>
+@{
+    ViewData["Title"] = "Randevu Saatleri";
+    Layout = "_YoneticiLayout";
+
+    string GunAdiniGetir(DayOfWeek gun)
+    {
+        return gun switch
+        {
+            DayOfWeek.Monday => "Pazartesi",
+            DayOfWeek.Tuesday => "Salı",
+            DayOfWeek.Wednesday => "Çarşamba",
+            DayOfWeek.Thursday => "Perşembe",
+            DayOfWeek.Friday => "Cuma",
+            DayOfWeek.Saturday => "Cumartesi",
+            DayOfWeek.Sunday => "Pazar",
+            _ => gun.ToString()
+        };
+    }
+}
+
+<div class="container-fluid">
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">Randevu Saatleri</h6>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#randevuSaatiEkleModal">
+                <i class="bi bi-plus"></i> Yeni Saat Ekle
+            </button>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Gün</th>
+                            <th>Saat</th>
+                            <th>Durum</th>
+                            <th>İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var saat in Model)
+                        {
+                            <tr>
+                                <td>@GunAdiniGetir(saat.Gun)</td>
+                                <td>@saat.Saat.ToString(@"hh\:mm")</td>
+                                <td>
+                                    <span class="badge @(saat.Aktif ? "bg-success" : "bg-danger")">
+                                        @(saat.Aktif ? "Aktif" : "Pasif")
+                                    </span>
+                                </td>
+                                <td>
+                                    <form asp-action="RandevuSaatiDurumDegistir" method="post" class="d-inline">
+                                        <input type="hidden" name="id" value="@saat.RandevuSaatiID" />
+                                        <button type="submit" class="btn btn-warning btn-sm">
+                                            <i class="bi bi-toggle-on"></i> Durum Değiştir
+                                        </button>
+                                    </form>
+                                    <form asp-action="RandevuSaatiSil" method="post" class="d-inline">
+                                        <input type="hidden" name="id" value="@saat.RandevuSaatiID" />
+                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Bu randevu saatini silmek istediğinizden emin misiniz?')">
+                                            <i class="bi bi-trash"></i> Sil
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Otomatik Randevu Oluşturma</h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <form asp-action="RandevulariOlustur" method="post" class="mb-3">
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="bi bi-calendar-plus"></i> Yarın İçin Randevuları Oluştur
+                        </button>
+                    </form>
+                </div>
+                <div class="col-md-6">
+                    <form asp-action="HaftalikRandevulariOlustur" method="post">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-calendar-week"></i> Bir Haftalık Randevuları Oluştur
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Randevu Saati Ekleme Modal -->
+<div class="modal fade" id="randevuSaatiEkleModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Yeni Randevu Saati Ekle</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-action="RandevuSaatiEkle" method="post">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Gün</label>
+                        <select name="gun" class="form-select" required>
+                            <option value="1">Pazartesi</option>
+                            <option value="2">Salı</option>
+                            <option value="3">Çarşamba</option>
+                            <option value="4">Perşembe</option>
+                            <option value="5">Cuma</option>
+                            <option value="6">Cumartesi</option>
+                            <option value="0">Pazar</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Saat</label>
+                        <input type="time" name="saat" class="form-control" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="submit" class="btn btn-primary">Ekle</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $('#dataTable').DataTable({
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.10.24/i18n/Turkish.json"
+                }
+            });
+        });
+    </script>
+} 

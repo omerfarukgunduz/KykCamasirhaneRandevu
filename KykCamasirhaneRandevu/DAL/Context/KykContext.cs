@@ -18,6 +18,7 @@ namespace KykCamasirhaneRandevu.DAL.Context
         public DbSet<CezaSuresi> CezaSuresi { get; set; }
         public DbSet<EmailAyarlari> EmailAyarlari { get; set; }
         public DbSet<RandevuHatirlatma> RandevuHatirlatma { get; set; }
+        public DbSet<RandevuSaati> RandevuSaatleri { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -86,6 +87,15 @@ namespace KykCamasirhaneRandevu.DAL.Context
                 entity.Property(e => e.SmtpUsername).IsRequired().HasMaxLength(100);
                 entity.Property(e => e.SmtpPassword).IsRequired().HasMaxLength(100);
                 entity.Property(e => e.FromEmail).IsRequired().HasMaxLength(100);
+            });
+
+            // RandevuSaati entity konfigürasyonu
+            modelBuilder.Entity<RandevuSaati>(entity =>
+            {
+                entity.HasKey(e => e.RandevuSaatiID);
+                entity.Property(e => e.Gun).IsRequired();
+                entity.Property(e => e.Saat).IsRequired();
+                entity.Property(e => e.Aktif).IsRequired();
             });
         }
     }
