@@ -26,6 +26,11 @@ namespace KykCamasirhaneRandevu.Controllers
 
         public IActionResult Login()
         {
+            // Eğer zaten giriş yapmışsa ana sayfaya yönlendir
+            if (HttpContext.Session.GetInt32("YoneticiID") != null)
+            {
+                return RedirectToAction("RandevuListele");
+            }
             return View();
         }
 
@@ -56,8 +61,27 @@ namespace KykCamasirhaneRandevu.Controllers
             }
         }
 
+        // Yönetici girişi kontrolü için yardımcı metod
+        private bool IsYoneticiGirisYapmis()
+        {
+            return HttpContext.Session.GetInt32("YoneticiID") != null;
+        }
+
+        // Yönetici girişi yapılmamışsa login sayfasına yönlendir
+        private IActionResult RedirectToLoginIfNotAuthenticated()
+        {
+            if (!IsYoneticiGirisYapmis())
+            {
+                return RedirectToAction("Login");
+            }
+            return null;
+        }
+
         public async Task<IActionResult> OgrenciListele()
         {
+            var authCheck = RedirectToLoginIfNotAuthenticated();
+            if (authCheck != null) return authCheck;
+
             var ogrenciler = await _context.Ogrenciler.ToListAsync();
             return View(ogrenciler);
         }
@@ -65,6 +89,9 @@ namespace KykCamasirhaneRandevu.Controllers
         [HttpPost]
         public async Task<IActionResult> OgrenciSil(int id)
         {
+            var authCheck = RedirectToLoginIfNotAuthenticated();
+            if (authCheck != null) return authCheck;
+
             var ogrenci = await _context.Ogrenciler.FindAsync(id);
             if (ogrenci != null)
             {
@@ -77,15 +104,20 @@ namespace KykCamasirhaneRandevu.Controllers
 
         public IActionResult OgrenciEkle()
         {
+            var authCheck = RedirectToLoginIfNotAuthenticated();
+            if (authCheck != null) return authCheck;
+
             return View();
         }
 
         [HttpPost]
         public async Task<IActionResult> OgrenciEkle(Ogrenci ogrenci)
         {
+            var authCheck = RedirectToLoginIfNotAuthenticated();
+            if (authCheck != null) return authCheck;
+
             if (ModelState.IsValid)
             {
-                // Ceza durumunu false ve ceza bitiş tarihini null olarak ayarla
                 ogrenci.CezaDurumu = false;
                 ogrenci.CezaBitisTarihi = null;
                 
@@ -99,6 +131,9 @@ namespace KykCamasirhaneRandevu.Controllers
 
         public async Task<IActionResult> OgrenciDuzenle(int id)
         {
+            var authCheck = RedirectToLoginIfNotAuthenticated();
+            if (authCheck != null) return authCheck;
+
             var ogrenci = await _context.Ogrenciler
                 .AsNoTracking()
                 .FirstOrDefaultAsync(o => o.OgrenciID == id);
@@ -168,18 +203,27 @@ namespace KykCamasirhaneRandevu.Controllers
 
         public async Task<IActionResult> DuyuruListele()
         {
+            var authCheck = RedirectToLoginIfNotAuthenticated();
+            if (authCheck != null) return authCheck;
+
             var duyurular = await _context.Duyurular.ToListAsync();
             return View(duyurular);
         }
 
         public IActionResult DuyuruEkle()
         {
+            var authCheck = RedirectToLoginIfNotAuthenticated();
+            if (authCheck != null) return authCheck;
+
             return View();
         }
 
         [HttpPost]
         public async Task<IActionResult> DuyuruEkle(Duyuru duyuru)
         {
+            var authCheck = RedirectToLoginIfNotAuthenticated();
+            if (authCheck != null) return authCheck;
+
             if (ModelState.IsValid)
             {
                 duyuru.DuyuruTarihi = DateTime.Now;
@@ -192,6 +236,9 @@ namespace KykCamasirhaneRandevu.Controllers
 
         public async Task<IActionResult> DuyuruDuzenle(int id)
         {
+            var authCheck = RedirectToLoginIfNotAuthenticated();
+            if (authCheck != null) return authCheck;
+
             var duyuru = await _context.Duyurular.FindAsync(id);
             if (duyuru == null)
             {
@@ -203,6 +250,9 @@ namespace KykCamasirhaneRandevu.Controllers
         [HttpPost]
         public async Task<IActionResult> DuyuruDuzenle(int id, Duyuru duyuru)
         {
+            var authCheck = RedirectToLoginIfNotAuthenticated();
+            if (authCheck != null) return authCheck;
+
             if (id != duyuru.DuyuruID)
             {
                 return NotFound();
@@ -234,6 +284,9 @@ namespace KykCamasirhaneRandevu.Controllers
         [HttpPost]
         public async Task<IActionResult> DuyuruSil(int id)
         {
+            var authCheck = RedirectToLoginIfNotAuthenticated();
+            if (authCheck != null) return authCheck;
+
             var duyuru = await _context.Duyurular.FindAsync(id);
             if (duyuru != null)
             {
@@ -245,18 +298,27 @@ namespace KykCamasirhaneRandevu.Controllers
 
         public async Task<IActionResult> YoneticiListele()
         {
+            var authCheck = RedirectToLoginIfNotAuthenticated();
+            if (authCheck != null) return authCheck;
+
             var yoneticiler = await _context.Yoneticiler.ToListAsync();
             return View(yoneticiler);
         }
 
         public IActionResult YoneticiEkle()
         {
+            var authCheck = RedirectToLoginIfNotAuthenticated();
+            if (authCheck != null) return authCheck;
+
             return View();
         }
 
         [HttpPost]
         public async Task<IActionResult> YoneticiEkle(Yonetici yonetici)
         {
+            var authCheck = RedirectToLoginIfNotAuthenticated();
+            if (authCheck != null) return authCheck;
+
             if (ModelState.IsValid)
             {
                 _context.Yoneticiler.Add(yonetici);
@@ -268,6 +330,9 @@ namespace KykCamasirhaneRandevu.Controllers
 
         public async Task<IActionResult> YoneticiDuzenle(int id)
         {
+            var authCheck = RedirectToLoginIfNotAuthenticated();
+            if (authCheck != null) return authCheck;
+
             var yonetici = await _context.Yoneticiler.FindAsync(id);
             if (yonetici == null)
             {
@@ -279,6 +344,9 @@ namespace KykCamasirhaneRandevu.Controllers
         [HttpPost]
         public async Task<IActionResult> YoneticiDuzenlePost(int id)
         {
+            var authCheck = RedirectToLoginIfNotAuthenticated();
+            if (authCheck != null) return authCheck;
+
             var yonetici = await _context.Yoneticiler.FindAsync(id);
             if (yonetici == null)
             {
@@ -311,7 +379,9 @@ namespace KykCamasirhaneRandevu.Controllers
         [HttpPost]
         public async Task<IActionResult> YoneticiSil(int id)
         {
-            // ID'si 1 olan süper yöneticiyi silmeye çalışırsa hata döndür
+            var authCheck = RedirectToLoginIfNotAuthenticated();
+            if (authCheck != null) return authCheck;
+
             if (id == 1)
             {
                 TempData["ErrorMessage"] = "Bu yönetici ana yöneticidir ve silinemez!";
@@ -329,6 +399,9 @@ namespace KykCamasirhaneRandevu.Controllers
 
         public async Task<IActionResult> CezaListesi()
         {
+            var authCheck = RedirectToLoginIfNotAuthenticated();
+            if (authCheck != null) return authCheck;
+
             var cezaliOgrenciler = await _context.Ogrenciler
                 .Where(o => o.CezaDurumu == true)
                 .ToListAsync();
@@ -338,6 +411,9 @@ namespace KykCamasirhaneRandevu.Controllers
         [HttpPost]
         public async Task<IActionResult> CezaKaldir(int id)
         {
+            var authCheck = RedirectToLoginIfNotAuthenticated();
+            if (authCheck != null) return authCheck;
+
             var ogrenci = await _context.Ogrenciler.FindAsync(id);
             if (ogrenci != null)
             {
@@ -350,12 +426,18 @@ namespace KykCamasirhaneRandevu.Controllers
 
         public IActionResult SifreGuncelle()
         {
+            var authCheck = RedirectToLoginIfNotAuthenticated();
+            if (authCheck != null) return authCheck;
+
             return View();
         }
 
         [HttpPost]
         public async Task<IActionResult> SifreGuncelle(string mevcutSifre, string yeniSifre, string yeniSifreTekrar)
         {
+            var authCheck = RedirectToLoginIfNotAuthenticated();
+            if (authCheck != null) return authCheck;
+
             var yoneticiId = HttpContext.Session.GetInt32("YoneticiID");
             if (yoneticiId == null)
             {
@@ -368,21 +450,18 @@ namespace KykCamasirhaneRandevu.Controllers
                 return NotFound();
             }
 
-            // Mevcut şifre kontrolü
             if (yonetici.YoneticiSifre != mevcutSifre)
             {
                 ModelState.AddModelError("mevcutSifre", "Mevcut şifre hatalı!");
                 return View();
             }
 
-            // Yeni şifrelerin eşleşme kontrolü
             if (yeniSifre != yeniSifreTekrar)
             {
                 ModelState.AddModelError("yeniSifreTekrar", "Yeni şifreler eşleşmiyor!");
                 return View();
             }
 
-            // Şifreyi güncelle
             yonetici.YoneticiSifre = yeniSifre;
             _context.Update(yonetici);
             await _context.SaveChangesAsync();
@@ -393,23 +472,14 @@ namespace KykCamasirhaneRandevu.Controllers
 
         public async Task<IActionResult> RandevuListele()
         {
-            try
-            {
-                var bugun = DateTime.Today;
-                var randevular = await _context.Randevular
-                    .Include(r => r.Ogrenci)
-                    .Where(r => r.RandevuTarihi >= bugun)
-                    .OrderByDescending(r => r.OgrenciID != null) // Önce dolu randevular
-                    .ThenBy(r => r.RandevuTarihi) // Sonra tarihe göre sırala
-                    .ToListAsync();
+            var authCheck = RedirectToLoginIfNotAuthenticated();
+            if (authCheck != null) return authCheck;
 
-                return View(randevular);
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"RandevuListele hatası: {ex.Message}");
-                throw;
-            }
+            var randevular = await _context.Randevular
+                .Include(r => r.Ogrenci)
+                .OrderByDescending(r => r.RandevuTarihi)
+                .ToListAsync();
+            return View(randevular);
         }
 
         [HttpPost]
@@ -428,6 +498,9 @@ namespace KykCamasirhaneRandevu.Controllers
         [HttpPost]
         public async Task<IActionResult> RandevuGerceklesmedi(int id)
         {
+            var authCheck = RedirectToLoginIfNotAuthenticated();
+            if (authCheck != null) return authCheck;
+
             var randevu = await _context.Randevular
                 .Include(r => r.Ogrenci)
                 .FirstOrDefaultAsync(r => r.RandevuID == id);
@@ -436,7 +509,6 @@ namespace KykCamasirhaneRandevu.Controllers
             {
                 randevu.RandevuGerceklesti = false;
                 
-                // Öğrenciye ceza ver
                 if (randevu.Ogrenci != null)
                 {
                     var cezaSuresi = await _context.CezaSuresi.FirstOrDefaultAsync();
@@ -456,13 +528,18 @@ namespace KykCamasirhaneRandevu.Controllers
 
         public IActionResult RandevuEkle()
         {
+            var authCheck = RedirectToLoginIfNotAuthenticated();
+            if (authCheck != null) return authCheck;
+
             return View();
         }
 
         [HttpPost]
         public async Task<IActionResult> RandevuEkle(Randevu randevu)
         {
-            // Tüm makineler için randevu oluştur
+            var authCheck = RedirectToLoginIfNotAuthenticated();
+            if (authCheck != null) return authCheck;
+
             for (int i = 1; i <= 35; i++)
             {
                 var yeniRandevu = new Randevu
@@ -533,6 +610,9 @@ namespace KykCamasirhaneRandevu.Controllers
 
         public async Task<IActionResult> Mesajlar()
         {
+            var authCheck = RedirectToLoginIfNotAuthenticated();
+            if (authCheck != null) return authCheck;
+
             var mesajlar = await _context.Mesajlar
                 .Include(m => m.Ogrenci)
                 .OrderByDescending(m => m.Tarih)
@@ -542,6 +622,9 @@ namespace KykCamasirhaneRandevu.Controllers
 
         public async Task<IActionResult> MesajCevap(int id)
         {
+            var authCheck = RedirectToLoginIfNotAuthenticated();
+            if (authCheck != null) return authCheck;
+
             var mesaj = await _context.Mesajlar
                 .Include(m => m.Ogrenci)
                 .FirstOrDefaultAsync(m => m.MesajID == id);
@@ -551,7 +634,6 @@ namespace KykCamasirhaneRandevu.Controllers
                 return NotFound();
             }
 
-            // Mesajı okundu olarak işaretle
             mesaj.Okundu = true;
             _context.Update(mesaj);
             await _context.SaveChangesAsync();
@@ -562,6 +644,9 @@ namespace KykCamasirhaneRandevu.Controllers
         [HttpPost]
         public async Task<IActionResult> MesajCevap(int id, string cevap)
         {
+            var authCheck = RedirectToLoginIfNotAuthenticated();
+            if (authCheck != null) return authCheck;
+
             var mesaj = await _context.Mesajlar
                 .Include(m => m.Ogrenci)
                 .FirstOrDefaultAsync(m => m.MesajID == id);
@@ -571,7 +656,6 @@ namespace KykCamasirhaneRandevu.Controllers
                 return NotFound();
             }
 
-            // Cevap mesajını oluştur
             var cevapMesaji = new Mesaj
             {
                 OgrenciID = mesaj.OgrenciID,
@@ -590,6 +674,9 @@ namespace KykCamasirhaneRandevu.Controllers
 
         public async Task<IActionResult> CezaSuresiAyarla()
         {
+            var authCheck = RedirectToLoginIfNotAuthenticated();
+            if (authCheck != null) return authCheck;
+
             var cezaSuresi = await _context.CezaSuresi.FirstOrDefaultAsync();
             var model = new CezaSuresiViewModel { Dakika = cezaSuresi?.CezaSuresiDakika ?? 0 };
             return View(model);
@@ -598,6 +685,9 @@ namespace KykCamasirhaneRandevu.Controllers
         [HttpPost]
         public async Task<IActionResult> CezaSuresiAyarla(CezaSuresiViewModel model)
         {
+            var authCheck = RedirectToLoginIfNotAuthenticated();
+            if (authCheck != null) return authCheck;
+
             if (ModelState.IsValid)
             {
                 var cezaSuresi = await _context.CezaSuresi.FirstOrDefaultAsync();
@@ -618,10 +708,10 @@ namespace KykCamasirhaneRandevu.Controllers
 
         public IActionResult Anketler()
         {
-            // Toplam anket sayısı
-            ViewBag.ToplamAnket = _context.Anketler.Count();
+            var authCheck = RedirectToLoginIfNotAuthenticated();
+            if (authCheck != null) return authCheck;
 
-            // Her bir kategorideki puanların dağılımını hesapla
+            ViewBag.ToplamAnket = _context.Anketler.Count();
             ViewBag.GirisKolayligiDagilimi = GetPuanDagilimi(a => a.GirisKolayligiPuani);
             ViewBag.RandevuIslemiDagilimi = GetPuanDagilimi(a => a.RandevuIslemiPuani);
             ViewBag.PerformansDagilimi = GetPuanDagilimi(a => a.PerformansPuani);
@@ -651,19 +741,16 @@ namespace KykCamasirhaneRandevu.Controllers
 
         public async Task<IActionResult> Dashboard()
         {
+            var authCheck = RedirectToLoginIfNotAuthenticated();
+            if (authCheck != null) return authCheck;
+
             var bugun = DateTime.Today;
             var model = new DashboardViewModel();
 
-            // Toplam Öğrenci Sayısı
             model.ToplamOgrenci = await _context.Ogrenciler.CountAsync();
-
-            // Toplam Randevu Sayısı
             model.ToplamRandevu = await _context.Randevular.CountAsync();
-
-            // Bugünkü Randevu Sayısı
             model.BugunkuRandevu = await _context.Randevular.CountAsync(r => r.RandevuTarihi.Date == bugun);
 
-            // En Çok Randevu Alan Öğrenci
             var enCokRandevuAlan = await _context.Randevular
                 .GroupBy(r => r.OgrenciID)
                 .Select(g => new
@@ -765,6 +852,9 @@ namespace KykCamasirhaneRandevu.Controllers
 
         public async Task<IActionResult> EmailAyarlari()
         {
+            var authCheck = RedirectToLoginIfNotAuthenticated();
+            if (authCheck != null) return authCheck;
+
             var ayarlar = await _context.EmailAyarlari.FirstOrDefaultAsync();
             if (ayarlar == null)
             {
@@ -776,6 +866,9 @@ namespace KykCamasirhaneRandevu.Controllers
         [HttpPost]
         public async Task<IActionResult> EmailAyarlari(EmailAyarlari ayarlar)
         {
+            var authCheck = RedirectToLoginIfNotAuthenticated();
+            if (authCheck != null) return authCheck;
+
             if (ModelState.IsValid)
             {
                 var mevcutAyarlar = await _context.EmailAyarlari.FirstOrDefaultAsync();
@@ -804,6 +897,9 @@ namespace KykCamasirhaneRandevu.Controllers
         [HttpGet]
         public async Task<IActionResult> HatirlatmaAyarlari()
         {
+            var authCheck = RedirectToLoginIfNotAuthenticated();
+            if (authCheck != null) return authCheck;
+
             var hatirlatmaAyari = await _context.RandevuHatirlatma.FirstOrDefaultAsync();
             if (hatirlatmaAyari == null)
             {
@@ -817,6 +913,9 @@ namespace KykCamasirhaneRandevu.Controllers
         [HttpPost]
         public async Task<IActionResult> HatirlatmaAyarlari(RandevuHatirlatma model)
         {
+            var authCheck = RedirectToLoginIfNotAuthenticated();
+            if (authCheck != null) return authCheck;
+
             if (ModelState.IsValid)
             {
                 var hatirlatmaAyari = await _context.RandevuHatirlatma.FirstOrDefaultAsync();
@@ -838,6 +937,9 @@ namespace KykCamasirhaneRandevu.Controllers
 
         public async Task<IActionResult> GecmisRandevular()
         {
+            var authCheck = RedirectToLoginIfNotAuthenticated();
+            if (authCheck != null) return authCheck;
+
             try
             {
                 var bugun = DateTime.Today;
@@ -858,8 +960,11 @@ namespace KykCamasirhaneRandevu.Controllers
 
         public async Task<IActionResult> RandevuSaatleri()
         {
+            var authCheck = RedirectToLoginIfNotAuthenticated();
+            if (authCheck != null) return authCheck;
+
             var randevuSaatleri = await _context.RandevuSaatleri
-                .OrderBy(r => r.Gun == DayOfWeek.Sunday ? 7 : (int)r.Gun) // Pazar'ı en sona al
+                .OrderBy(r => r.Gun == DayOfWeek.Sunday ? 7 : (int)r.Gun)
                 .ThenBy(r => r.Saat)
                 .ToListAsync();
 
@@ -869,6 +974,9 @@ namespace KykCamasirhaneRandevu.Controllers
         [HttpPost]
         public async Task<IActionResult> RandevuSaatiEkle(DayOfWeek gun, TimeSpan saat)
         {
+            var authCheck = RedirectToLoginIfNotAuthenticated();
+            if (authCheck != null) return authCheck;
+
             var randevuSaati = new RandevuSaati
             {
                 Gun = gun,
@@ -886,6 +994,9 @@ namespace KykCamasirhaneRandevu.Controllers
         [HttpPost]
         public async Task<IActionResult> RandevuSaatiSil(int id)
         {
+            var authCheck = RedirectToLoginIfNotAuthenticated();
+            if (authCheck != null) return authCheck;
+
             var randevuSaati = await _context.RandevuSaatleri.FindAsync(id);
             if (randevuSaati != null)
             {
@@ -899,6 +1010,9 @@ namespace KykCamasirhaneRandevu.Controllers
         [HttpPost]
         public async Task<IActionResult> RandevuSaatiDurumDegistir(int id)
         {
+            var authCheck = RedirectToLoginIfNotAuthenticated();
+            if (authCheck != null) return authCheck;
+
             var randevuSaati = await _context.RandevuSaatleri.FindAsync(id);
             if (randevuSaati != null)
             {
@@ -912,6 +1026,9 @@ namespace KykCamasirhaneRandevu.Controllers
         [HttpPost]
         public async Task<IActionResult> RandevulariOlustur()
         {
+            var authCheck = RedirectToLoginIfNotAuthenticated();
+            if (authCheck != null) return authCheck;
+
             var bugun = DateTime.Today;
             var yarin = bugun.AddDays(1);
             var randevuSaatleri = await _context.RandevuSaatleri
@@ -941,19 +1058,19 @@ namespace KykCamasirhaneRandevu.Controllers
         [HttpPost]
         public async Task<IActionResult> HaftalikRandevulariOlustur()
         {
+            var authCheck = RedirectToLoginIfNotAuthenticated();
+            if (authCheck != null) return authCheck;
+
             var bugun = DateTime.Today;
             var yarin = bugun.AddDays(1);
-            var birHaftaSonra = yarin.AddDays(6); // 7 günlük periyot
+            var birHaftaSonra = yarin.AddDays(6);
 
-            // Aktif randevu saatlerini al
             var randevuSaatleri = await _context.RandevuSaatleri
                 .Where(r => r.Aktif)
                 .ToListAsync();
 
-            // Her gün için randevuları oluştur
             for (var tarih = yarin; tarih <= birHaftaSonra; tarih = tarih.AddDays(1))
             {
-                // O güne ait randevu saatlerini filtrele
                 var gununSaatleri = randevuSaatleri.Where(r => r.Gun == tarih.DayOfWeek);
 
                 foreach (var randevuSaati in gununSaatleri)
@@ -975,6 +1092,12 @@ namespace KykCamasirhaneRandevu.Controllers
             await _context.SaveChangesAsync();
             TempData["SuccessMessage"] = "Bir haftalık randevular başarıyla oluşturuldu.";
             return RedirectToAction(nameof(RandevuSaatleri));
+        }
+
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+            return RedirectToAction("Login");
         }
     }
 } 
