@@ -411,5 +411,20 @@ namespace KykCamasirhaneRandevu.Controllers
             TempData["SuccessMessage"] = "Mesajınız başarıyla gönderildi.";
             return RedirectToAction(nameof(Mesajlarim));
         }
+
+        public async Task<IActionResult> Duyurular()
+        {
+            var ogrenciId = HttpContext.Session.GetInt32("OgrenciID");
+            if (ogrenciId == null)
+            {
+                return RedirectToAction("Login");
+            }
+
+            var duyurular = await _context.Duyurular
+                .OrderByDescending(d => d.DuyuruTarihi)
+                .ToListAsync();
+
+            return View(duyurular);
+        }
     }
 } 

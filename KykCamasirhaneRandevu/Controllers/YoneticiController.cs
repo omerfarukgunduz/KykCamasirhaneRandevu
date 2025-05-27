@@ -10,6 +10,8 @@ using KykCamasirhaneRandevu.Models;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Linq;
+using Microsoft.Extensions.Logging;
+using KykCamasirhaneRandevu.Services;
 
 namespace KykCamasirhaneRandevu.Controllers
 {
@@ -17,11 +19,13 @@ namespace KykCamasirhaneRandevu.Controllers
     {
         private readonly KykContext _context;
         private readonly IConfiguration _configuration;
+        private readonly ILogger<YoneticiController> _logger;
 
-        public YoneticiController(KykContext context, IConfiguration configuration)
+        public YoneticiController(KykContext context, IConfiguration configuration, ILogger<YoneticiController> logger)
         {
             _context = context;
             _configuration = configuration;
+            _logger = logger;
         }
 
         public IActionResult Login()
@@ -229,6 +233,42 @@ namespace KykCamasirhaneRandevu.Controllers
                 duyuru.DuyuruTarihi = DateTime.Now;
                 _context.Duyurular.Add(duyuru);
                 await _context.SaveChangesAsync();
+
+                // Tüm öğrencilere duyuru maili gönder
+                var ogrenciler = await _context.Ogrenciler.ToListAsync();
+                var emailService = HttpContext.RequestServices.GetRequiredService<EmailService>();
+
+                var emailIcerik = $@"
+                    <html>
+                    <body style='font-family: Arial, sans-serif; line-height: 1.6; color: #333;'>
+                        <div style='max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px;'>
+                            <h2 style='color: #2c3e50;'>KYK Çamaşırhane Duyurusu</h2>
+                            <h3 style='color: #34495e;'>{duyuru.DuyuruKonu}</h3>
+                            <div style='background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin: 15px 0;'>
+                                {duyuru.DuyuruMetin}
+                            </div>
+                            <p style='color: #666; font-size: 0.9em;'>Bu duyuru {duyuru.DuyuruTarihi:dd.MM.yyyy HH:mm} tarihinde yayınlanmıştır.</p>
+                        </div>
+                    </body>
+                    </html>";
+
+                foreach (var ogrenci in ogrenciler)
+                {
+                    try
+                    {
+                        await emailService.SendEmailAsync(
+                            ogrenci.OgrenciEposta,
+                            $"KYK Çamaşırhane Duyurusu: {duyuru.DuyuruKonu}",
+                            emailIcerik
+                        );
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError($"Duyuru maili gönderilirken hata oluştu - Öğrenci: {ogrenci.OgrenciEposta}, Hata: {ex.Message}");
+                    }
+                }
+
+                TempData["SuccessMessage"] = "Duyuru başarıyla eklendi ve tüm öğrencilere mail gönderildi.";
                 return RedirectToAction(nameof(DuyuruListele));
             }
             return View(duyuru);

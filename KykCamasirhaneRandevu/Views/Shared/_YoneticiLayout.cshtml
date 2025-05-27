@@ -103,7 +103,13 @@
                             <i class="bi bi-calendar-check"></i> Randevu Yönetimi
                         </a>
                     </li>
-                      <li class="nav-item">
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Yonetici" asp-action="RandevuSaatleri">
+                            <i class="bi bi-clock"></i>
+                            <span>Randevu Saatleri</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" asp-controller="Yonetici" asp-action="GecmisRandevular">
                             <i class="bi bi-clock-history"></i>
                             <span>Geçmiş Randevular</span>
@@ -161,24 +167,19 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" asp-controller="Yonetici" asp-action="EmailAyarlari">
-                            <i class="bi bi-envelope"></i>
-                            <span>E-posta Ayarları</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link" asp-controller="Yonetici" asp-action="HatirlatmaAyarlari">
                             <i class="bi bi-bell"></i>
-                            <span>Hatırlatma Ayarları</span>
+                            <span>Hatırlatma Süresi Ayarları</span>
                         </a>
                     </li>
-                    
                     <li class="nav-item">
-                        <a class="nav-link" asp-controller="Yonetici" asp-action="RandevuSaatleri">
-                            <i class="bi bi-clock"></i>
-                            <span>Randevu Saatleri</span>
+                        <a class="nav-link" asp-controller="Yonetici" asp-action="EmailAyarlari">
+                            <i class="bi bi-envelope"></i>
+                            <span>Gmail SMTP Ayarları</span>
                         </a>
                     </li>
+                   
+                    
                     <li class="nav-item">
                         <a class="nav-link" asp-controller="Yonetici" asp-action="Logout">
                             <i class="bi bi-box-arrow-right"></i>

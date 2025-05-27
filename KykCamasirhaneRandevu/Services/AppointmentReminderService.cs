@@ -70,14 +70,18 @@ namespace KykCamasirhaneRandevu.Services
                                         <div style='max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px;'>
                                             <h2 style='color: #2c3e50;'>Çamaşırhane Randevu Hatırlatması</h2>
                                             <p>Sayın {randevu.Ogrenci.OgrenciAdSoyad},</p>
-                                            <p>Çamaşırhaneye <strong> {randevu.RandevuTarihi:dd.MM.yyyy HH:mm}</strong> tarihinde randevunuz bulunmaktadır. Gelemeyecekseniz lütfen randevunuzu iptal etmeyi unutmayınız.</p>
-                                            <p><strong>Randevu Detayları:</strong></p>
-                                            <ul>
-                                                <li>Tarih: {randevu.RandevuTarihi:dd.MM.yyyy HH:mm}</li>
-                                                <li>Makine No: {randevu.MakineNo}</li>
-                                            </ul>
-                                            <p>Randevunuza zamanında gelmenizi rica ederiz.</p>
-                                            <p style='color: #666; font-size: 0.9em;'>Bu otomatik bir hatırlatma e-postasıdır.</p>
+                                            <div style='background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin: 15px 0;'>
+                                                <p>Çamaşırhaneye <strong>{randevu.RandevuTarihi:dd.MM.yyyy HH:mm}</strong> tarihinde randevunuz bulunmaktadır. Gelemeyecekseniz lütfen randevunuzu iptal etmeyi unutmayınız.</p>
+                                            </div>
+                                            <div style='background-color: #e8f4f8; padding: 15px; border-radius: 5px; margin: 15px 0;'>
+                                                <h3 style='color: #34495e; margin-top: 0;'>Randevu Detayları</h3>
+                                                <ul style='list-style-type: none; padding-left: 0;'>
+                                                    <li style='margin-bottom: 8px;'><strong>Tarih:</strong> {randevu.RandevuTarihi:dd.MM.yyyy HH:mm}</li>
+                                                    <li style='margin-bottom: 8px;'><strong>Makine No:</strong> {randevu.MakineNo}</li>
+                                                </ul>
+                                            </div>
+                                            <p style='color: #666; font-size: 0.9em;'>Randevunuza zamanında gelmenizi rica ederiz.</p>
+                                            <p style='color: #666; font-size: 0.9em; margin-top: 20px; border-top: 1px solid #ddd; padding-top: 15px;'>Bu otomatik bir hatırlatma e-postasıdır.</p>
                                         </div>
                                     </body>
                                     </html>";
