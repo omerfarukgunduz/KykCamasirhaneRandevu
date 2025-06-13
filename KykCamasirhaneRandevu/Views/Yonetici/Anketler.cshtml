@@ -4,8 +4,8 @@
 }
 
 <div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
+    <div class="row justify-content-center">
+        <div class="col-12 col-xl-10">
             <div class="card shadow mb-4">
                 <div class="card-header py-3 d-flex justify-content-between align-items-center">
                     <h6 class="m-0 font-weight-bold text-primary">Anket Sonuçları</h6>
@@ -22,7 +22,9 @@
                                     <h6 class="m-0 font-weight-bold text-primary">Çok Boyutlu Değerlendirme</h6>
                                 </div>
                                 <div class="card-body">
-                                    <canvas id="radarChart"></canvas>
+                                    <div style="height: 400px;">
+                                        <canvas id="radarChart"></canvas>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -34,7 +36,9 @@
                                     <h6 class="m-0 font-weight-bold text-primary">Sisteme Giriş Kolaylığı</h6>
                                 </div>
                                 <div class="card-body">
-                                    <canvas id="girisKolayligiChart"></canvas>
+                                    <div style="height: 300px;">
+                                        <canvas id="girisKolayligiChart"></canvas>
+                                    </div>
                                     <div class="mt-3" id="girisKolayligiYuzde"></div>
                                 </div>
                             </div>
@@ -47,7 +51,9 @@
                                     <h6 class="m-0 font-weight-bold text-primary">Randevu İşlemi Kolaylığı</h6>
                                 </div>
                                 <div class="card-body">
-                                    <canvas id="randevuIslemiChart"></canvas>
+                                    <div style="height: 300px;">
+                                        <canvas id="randevuIslemiChart"></canvas>
+                                    </div>
                                     <div class="mt-3" id="randevuIslemiYuzde"></div>
                                 </div>
                             </div>
@@ -60,7 +66,9 @@
                                     <h6 class="m-0 font-weight-bold text-primary">Sistem Performansı</h6>
                                 </div>
                                 <div class="card-body">
-                                    <canvas id="performansChart"></canvas>
+                                    <div style="height: 300px;">
+                                        <canvas id="performansChart"></canvas>
+                                    </div>
                                     <div class="mt-3" id="performansYuzde"></div>
                                 </div>
                             </div>
@@ -73,7 +81,9 @@
                                     <h6 class="m-0 font-weight-bold text-primary">Arayüz ve Tasarım</h6>
                                 </div>
                                 <div class="card-body">
-                                    <canvas id="arayuzChart"></canvas>
+                                    <div style="height: 300px;">
+                                        <canvas id="arayuzChart"></canvas>
+                                    </div>
                                     <div class="mt-3" id="arayuzYuzde"></div>
                                 </div>
                             </div>
@@ -86,7 +96,9 @@
                                     <h6 class="m-0 font-weight-bold text-primary">Genel Memnuniyet</h6>
                                 </div>
                                 <div class="card-body">
-                                    <canvas id="memnuniyetChart"></canvas>
+                                    <div style="height: 300px;">
+                                        <canvas id="memnuniyetChart"></canvas>
+                                    </div>
                                     <div class="mt-3" id="memnuniyetYuzde"></div>
                                 </div>
                             </div>
@@ -99,7 +111,9 @@
                                     <h6 class="m-0 font-weight-bold text-primary">Öneri Puanı</h6>
                                 </div>
                                 <div class="card-body">
-                                    <canvas id="oneriChart"></canvas>
+                                    <div style="height: 300px;">
+                                        <canvas id="oneriChart"></canvas>
+                                    </div>
                                     <div class="mt-3" id="oneriYuzde"></div>
                                 </div>
                             </div>
@@ -119,6 +133,15 @@
             font-weight: bold;
             color: white;
             transition: background-color 0.3s;
+        }
+        
+        .card {
+            max-width: 100%;
+        }
+        
+        canvas {
+            max-width: 100%;
+            height: auto !important;
         }
     </style>
     <script>

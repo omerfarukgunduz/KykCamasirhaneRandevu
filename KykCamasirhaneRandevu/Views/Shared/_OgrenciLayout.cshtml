@@ -14,6 +14,7 @@
             background: #2c3e50;
             color: white;
             transition: all 0.3s;
+            width: 280px;
         }
 
         .sidebar .nav-link {
@@ -40,6 +41,9 @@
 
         .content {
             padding: 2rem;
+            min-height: 100vh;
+            width: 100%;
+            overflow-x: hidden;
         }
 
         .navbar {
@@ -71,7 +75,7 @@
             .sidebar {
                 position: fixed;
                 z-index: 1000;
-                width: 250px;
+                width: 280px;
                 transform: translateX(-100%);
             }
             .sidebar.show {
