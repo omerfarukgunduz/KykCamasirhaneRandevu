@@ -22,15 +22,34 @@
             padding: 1rem;
             margin: 0.2rem 0;
             border-radius: 0.5rem;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            position: relative;
         }
 
         .sidebar .nav-link:hover {
-            background: rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.15);
             color: white;
+            transform: translateX(5px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .sidebar .nav-link::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 3px;
+            background: #3498db;
+            transform: scaleY(0);
+            transition: transform 0.2s;
+        }
+
+        .sidebar .nav-link:hover::before {
+            transform: scaleY(1);
         }
 
         .sidebar .nav-link.active {
