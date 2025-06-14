@@ -39,12 +39,12 @@
                 <table class="table table-bordered" id="randevuTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
-                            <th>Öğrenci</th>
-                            <th>Makine No</th>
+                            <th style="width: 150px;">Öğrenci</th>
+                            <th style="width: 30px;">Makine No</th>
                             <th>Randevu Tarihi</th>
                             <th>Teslim Zamanı</th>
                             <th>Kurutma</th>
-                            <th>Gerçekleşme Durumu</th>
+                            <th style="width: 110px;">Gerçekleşme Durumu</th>
                             <th>İşlemler</th>
                         </tr>
                     </thead>
@@ -53,7 +53,7 @@
                         {
                             <tr>
                                 <td>@(randevu.Ogrenci?.OgrenciAdSoyad ?? "Boş Randevu")</td>
-                                <td>@randevu.MakineNo</td>
+                                <td style="width: 70px;">@randevu.MakineNo</td>
                                 <td>@randevu.RandevuTarihi.ToString("dd.MM.yyyy HH:mm")</td>
                                 <td>@HesaplaTeslimZamani(randevu.RandevuTarihi, randevu.Kurutma)</td>
                                 <td>@(randevu.Kurutma == null ? "Belirlenmedi" : (randevu.Kurutma.Value ? "Evet" : "Hayır"))</td>
@@ -72,18 +72,18 @@
                                     }
                                 </td>
                                 <td>
-                                    <div class="d-flex flex-wrap gap-2">
+                                    <div class="btn-group" role="group">
                                         @if (randevu.RandevuGerceklesti == null)
                                         {
                                             <form asp-action="RandevuGerceklesti" method="post" class="d-inline">
                                                 <input type="hidden" name="id" value="@randevu.RandevuID" />
-                                                <button type="submit" class="btn btn-success btn-sm">
+                                                <button type="submit" class="btn btn-success btn-sm me-1">
                                                     <i class="bi bi-check-circle"></i> Gerçekleşti
                                                 </button>
                                             </form>
                                             <form asp-action="RandevuGerceklesmedi" method="post" class="d-inline">
                                                 <input type="hidden" name="id" value="@randevu.RandevuID" />
-                                                <button type="submit" class="btn btn-danger btn-sm">
+                                                <button type="submit" class="btn btn-danger btn-sm me-1">
                                                     <i class="bi bi-x-circle"></i> Gerçekleşmedi
                                                 </button>
                                             </form>
