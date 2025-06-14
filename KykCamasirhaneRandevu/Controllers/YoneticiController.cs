@@ -1155,5 +1155,52 @@ namespace KykCamasirhaneRandevu.Controllers
             HttpContext.Session.Clear();
             return RedirectToAction("Login");
         }
+
+        public IActionResult SifreAl()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SifreAl(string yoneticiTC, string yoneticiEposta)
+        {
+            if (string.IsNullOrEmpty(yoneticiTC) || string.IsNullOrEmpty(yoneticiEposta))
+            {
+                ViewBag.Error = "TC numarası ve e-posta alanları boş bırakılamaz!";
+                return View();
+            }
+
+            var yonetici = await _context.Yoneticiler
+                .FirstOrDefaultAsync(y => y.YoneticiTC == yoneticiTC && y.YoneticiEposta == yoneticiEposta);
+
+            if (yonetici != null)
+            {
+                // E-posta gönderme işlemi
+                var emailService = HttpContext.RequestServices.GetRequiredService<EmailService>();
+                var emailIcerik = $@"
+                    <html>
+                    <body style='font-family: Arial, sans-serif; line-height: 1.6; color: #333;'>
+                        <div style='max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px;'>
+                            <h2 style='color: #2c3e50;'>KYK Çamaşırhane Şifre Bilgisi</h2>
+                            <p>Sayın {yonetici.YoneticiAdSoyad},</p>
+                            <p>Şifre alma talebiniz alınmıştır. Şifreniz aşağıda belirtilmiştir:</p>
+                            <div style='background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin: 15px 0;'>
+                                <strong>Şifreniz:</strong> {yonetici.YoneticiSifre}
+                            </div>
+                            <p>Güvenliğiniz için giriş yaptıktan sonra şifrenizi değiştirmenizi öneririz.</p>
+                        </div>
+                    </body>
+                    </html>";
+
+                await emailService.SendEmailAsync(yonetici.YoneticiEposta, "KYK Çamaşırhane Şifre Bilgisi", emailIcerik);
+                ViewBag.Success = "Şifreniz e-posta adresinize gönderilmiştir.";
+            }
+            else
+            {
+                ViewBag.Error = "TC numarası veya e-posta adresi hatalı!";
+            }
+
+            return View();
+        }
     }
 } 

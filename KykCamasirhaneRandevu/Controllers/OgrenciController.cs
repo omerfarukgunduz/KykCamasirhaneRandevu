@@ -49,9 +49,21 @@ namespace KykCamasirhaneRandevu.Controllers
             {
                 var emailService = HttpContext.RequestServices.GetRequiredService<EmailService>();
                 var konu = "KYK Çamaşırhane Randevu - Şifre Hatırlatma";
-                var icerik = $"Sayın {ogrenci.OgrenciAdSoyad},<br><br>" +
-                            $"KYK Çamaşırhane Randevu sistemindeki şifreniz: {ogrenci.OgrenciSifre}<br><br>" +
-                            "İyi günler dileriz.";
+                var icerik = $@"
+                    <html>
+                    <body style='font-family: Arial, sans-serif; line-height: 1.6; color: #333;'>
+                        <div style='max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px;'>
+                            <h2 style='color: #2c3e50;'>KYK Çamaşırhane Şifre Bilgisi</h2>
+                            <p>Sayın {ogrenci.OgrenciAdSoyad},</p>
+                            <p>Şifre alma talebiniz alınmıştır. Şifreniz aşağıda belirtilmiştir:</p>
+                            <div style='background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin: 15px 0;'>
+                                <strong>Şifreniz:</strong> {ogrenci.OgrenciSifre}
+                            </div>
+                            <p>Güvenliğiniz için giriş yaptıktan sonra şifrenizi değiştirmenizi öneririz.</p>
+                            <p style='color: #666; font-size: 0.9em;'>Bu e-posta {DateTime.Now:dd.MM.yyyy HH:mm} tarihinde gönderilmiştir.</p>
+                        </div>
+                    </body>
+                    </html>";
 
                 await emailService.SendEmailAsync(eposta, konu, icerik);
                 ViewBag.Success = "Şifreniz e-posta adresinize gönderildi.";
