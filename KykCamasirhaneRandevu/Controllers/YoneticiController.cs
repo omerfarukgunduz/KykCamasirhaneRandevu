@@ -712,6 +712,22 @@ namespace KykCamasirhaneRandevu.Controllers
             return RedirectToAction(nameof(Mesajlar));
         }
 
+        [HttpPost]
+        public async Task<IActionResult> MesajSil(int id)
+        {
+            var authCheck = RedirectToLoginIfNotAuthenticated();
+            if (authCheck != null) return authCheck;
+
+            var mesaj = await _context.Mesajlar.FindAsync(id);
+            if (mesaj != null)
+            {
+                _context.Mesajlar.Remove(mesaj);
+                await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Mesaj başarıyla silindi.";
+            }
+            return RedirectToAction(nameof(Mesajlar));
+        }
+
         public async Task<IActionResult> CezaSuresiAyarla()
         {
             var authCheck = RedirectToLoginIfNotAuthenticated();

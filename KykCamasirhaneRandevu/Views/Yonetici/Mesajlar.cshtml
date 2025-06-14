@@ -56,6 +56,11 @@
                                         <a asp-action="MesajCevap" asp-route-id="@mesaj.MesajID" class="btn btn-primary btn-sm">
                                             <i class="bi bi-reply"></i> Cevapla
                                         </a>
+                                        <form asp-action="MesajSil" asp-route-id="@mesaj.MesajID" method="post" style="display:inline;" onsubmit="return confirm('Mesajı silmek istediğinize emin misiniz?');">
+                                            <button type="submit" class="btn btn-danger btn-sm">
+                                                <i class="bi bi-trash"></i> Sil
+                                            </button>
+                                        </form>
                                     </td>
                                 </tr>
 

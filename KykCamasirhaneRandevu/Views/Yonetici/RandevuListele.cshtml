@@ -72,7 +72,7 @@
                                     }
                                 </td>
                                 <td>
-                                    <div class="btn-group" role="group">
+                                    <div class="d-flex flex-wrap gap-2">
                                         @if (randevu.RandevuGerceklesti == null)
                                         {
                                             <form asp-action="RandevuGerceklesti" method="post" class="d-inline">
@@ -88,6 +88,11 @@
                                                 </button>
                                             </form>
                                         }
+                                        <form asp-action="RandevuSil" asp-route-id="@randevu.RandevuID" method="post" class="d-inline" onsubmit="return confirm('Randevuyu silmek istediğinize emin misiniz?');">
+                                            <button type="submit" class="btn btn-warning btn-sm text-white">
+                                                <i class="bi bi-trash"></i> Sil
+                                            </button>
+                                        </form>
                                     </div>
                                 </td>
                             </tr>
