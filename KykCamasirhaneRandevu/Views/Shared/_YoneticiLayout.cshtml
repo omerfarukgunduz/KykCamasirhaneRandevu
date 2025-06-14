@@ -103,10 +103,19 @@
         <!-- Sidebar -->
         <nav class="sidebar">
             <div class="p-3">
-                <span class="sidebar-close">&times;</span>
-                <h4 class="text-center mb-4">KYK Çamaşırhane Yönetim</h4>
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4 class="m-0">KYK Çamaşırhane Yönetim</h4>
+                    <button class="btn btn-link text-white p-0 d-lg-none sidebar-close">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </div>
                 <hr>
                 <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link">
+                            <i class="bi bi-person"></i> @Context.Session.GetString("YoneticiAdSoyad")
+                        </a>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link" asp-controller="Yonetici" asp-action="RandevuListele">
                             <i class="bi bi-calendar-check"></i> Randevu Yönetimi
@@ -201,21 +210,10 @@
 
         <!-- Page Content -->
         <div class="content flex-grow-1">
-            <!-- Top Navigation -->
-            <nav class="navbar navbar-expand-lg navbar-dark mb-4">
-                <div class="container-fluid">
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <div class="collapse navbar-collapse" id="navbarNav">
-                        <ul class="navbar-nav ms-auto">
-                            <li class="nav-item">
-                                <span class="nav-link">Hoş Geldiniz, @Context.Session.GetString("YoneticiAdSoyad")</span>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </nav>
+            <!-- Mobile Menu Toggle -->
+            <button class="btn btn-link text-dark d-lg-none position-fixed top-0 start-0 mt-3 ms-3" id="sidebarToggle">
+                <i class="bi bi-list fs-4"></i>
+            </button>
 
             <!-- Main Content -->
             <main>
@@ -236,7 +234,7 @@
         const sidebar = document.querySelector('.sidebar');
         const overlay = document.querySelector('.sidebar-overlay');
         const closeBtn = document.querySelector('.sidebar-close');
-        const toggleBtn = document.querySelector('.navbar-toggler');
+        const toggleBtn = document.getElementById('sidebarToggle');
 
         function toggleSidebar() {
             sidebar.classList.toggle('show');
