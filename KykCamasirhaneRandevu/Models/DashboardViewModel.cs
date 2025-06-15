@@ -7,8 +7,7 @@ namespace KykCamasirhaneRandevu.Models
         public int ToplamOgrenci { get; set; }
         public int ToplamRandevu { get; set; }
         public int BugunkuRandevu { get; set; }
-        public string EnCokRandevuAlan { get; set; }
-        public int EnCokRandevuSayisi { get; set; }
+        public List<EnCokRandevuAlanOgrenci> EnCokRandevuAlanOgrenciler { get; set; }
         public int KullanilanMakineSayisi { get; set; }
         public int ToplamMakineSayisi { get; set; }
         public int CezaAlanOgrenci { get; set; }
@@ -17,6 +16,12 @@ namespace KykCamasirhaneRandevu.Models
         public List<MakineKullanimViewModel> MakineKullanimListesi { get; set; }
         public List<KurutmaIstatistikViewModel> KurutmaIstatistikleri { get; set; }
         public List<GunlukKullanimViewModel> GunlukKullanimListesi { get; set; }
+    }
+
+    public class EnCokRandevuAlanOgrenci
+    {
+        public string OgrenciAdSoyad { get; set; }
+        public int RandevuSayisi { get; set; }
     }
 
     public class MakineKullanimViewModel

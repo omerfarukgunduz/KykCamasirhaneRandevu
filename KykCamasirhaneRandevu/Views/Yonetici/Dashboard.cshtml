@@ -129,19 +129,39 @@
 
     <!-- Detaylı Bilgiler -->
     <div class="row">
-        <!-- En Çok Randevu Alan Öğrenci -->
+        <!-- En Çok Randevu Alan Öğrenciler -->
         <div class="col-xl-6 col-lg-6">
             <div class="card shadow mb-4">
                 <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">En Çok Randevu Alan Öğrenci</h6>
+                    <h6 class="m-0 font-weight-bold text-primary">En Çok Randevu Alan Öğrenciler</h6>
                 </div>
                 <div class="card-body">
-                    @if (!string.IsNullOrEmpty(Model.EnCokRandevuAlan))
+                    @if (Model.EnCokRandevuAlanOgrenciler != null && Model.EnCokRandevuAlanOgrenciler.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Öğrenci</th>
+                                        <th>Randevu Sayısı</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var ogrenci in Model.EnCokRandevuAlanOgrenciler)
+                                    {
+                                        <tr>
+                                            <td>@ogrenci.OgrenciAdSoyad</td>
+                                            <td class="text-center">@ogrenci.RandevuSayisi</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
                     {
                         <div class="text-center">
-                            <h4 class="mb-3">@Model.EnCokRandevuAlan</h4>
-                            <div class="h2 mb-0 font-weight-bold text-primary">@Model.EnCokRandevuSayisi</div>
-                            <div class="text-muted">Toplam Randevu</div>
+                            <p class="text-muted">Henüz randevu alan öğrenci bulunmamaktadır.</p>
                         </div>
                     }
                 </div>
@@ -242,11 +262,14 @@
         var kurutmaIstatistikChart = new Chart(kurutmaIstatistikCtx, {
             type: 'doughnut',
             data: {
-                labels: ['Kurutma İsteyenler', 'Kurutma İstemeyenler'],
+                labels: [
+                    'Kurutma İsteyenler (' + Math.round((@Model.KurutmaSecildi / (@Model.KurutmaSecildi + @Model.KurutmaSecilmedi)) * 100) + '%)',
+                    'Kurutma İstemeyenler (' + Math.round((@Model.KurutmaSecilmedi / (@Model.KurutmaSecildi + @Model.KurutmaSecilmedi)) * 100) + '%)'
+                ],
                 datasets: [{
                     data: [@Model.KurutmaSecildi, @Model.KurutmaSecilmedi],
-                    backgroundColor: ['rgba(40, 167, 69, 0.8)', 'rgba(108, 117, 125, 0.8)'],
-                    borderColor: ['rgba(40, 167, 69, 1)', 'rgba(108, 117, 125, 1)'],
+                    backgroundColor: ['rgba(40, 167, 69, 0.8)', 'rgba(220, 53, 69, 0.8)'],
+                    borderColor: ['rgba(40, 167, 69, 1)', 'rgba(220, 53, 69, 1)'],
                     borderWidth: 1
                 }]
             },

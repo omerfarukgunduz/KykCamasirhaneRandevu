@@ -808,6 +808,7 @@ namespace KykCamasirhaneRandevu.Controllers
             model.BugunkuRandevu = await _context.Randevular.CountAsync(r => r.RandevuTarihi.Date == bugun);
 
             var enCokRandevuAlan = await _context.Randevular
+                .Where(r => r.OgrenciID != null)
                 .GroupBy(r => r.OgrenciID)
                 .Select(g => new
                 {
@@ -815,20 +816,27 @@ namespace KykCamasirhaneRandevu.Controllers
                     Toplam = g.Count()
                 })
                 .OrderByDescending(x => x.Toplam)
-                .FirstOrDefaultAsync();
+                .Take(5)
+                .ToListAsync();
 
-            if (enCokRandevuAlan != null)
+            model.EnCokRandevuAlanOgrenciler = new List<EnCokRandevuAlanOgrenci>();
+            foreach (var item in enCokRandevuAlan)
             {
-                var ogrenci = await _context.Ogrenciler.FindAsync(enCokRandevuAlan.OgrenciID);
+                var ogrenci = await _context.Ogrenciler
+                    .FirstOrDefaultAsync(o => o.OgrenciID == item.OgrenciID);
                 if (ogrenci != null)
                 {
-                    model.EnCokRandevuAlan = ogrenci.OgrenciAdSoyad;
-                    model.EnCokRandevuSayisi = enCokRandevuAlan.Toplam;
+                    model.EnCokRandevuAlanOgrenciler.Add(new EnCokRandevuAlanOgrenci
+                    {
+                        OgrenciAdSoyad = ogrenci.OgrenciAdSoyad,
+                        RandevuSayisi = item.Toplam
+                    });
                 }
             }
 
             // Makinelerin Kullanım Durumu
             model.MakineKullanimListesi = await _context.Randevular
+                .Where(r => r.OgrenciID != null)
                 .GroupBy(r => r.MakineNo)
                 .Select(g => new MakineKullanimViewModel
                 {
@@ -864,7 +872,9 @@ namespace KykCamasirhaneRandevu.Controllers
 
             // Önce veritabanından ham verileri al
             var gunlukKullanimHam = await _context.Randevular
-                .Where(r => r.RandevuTarihi.Date >= son7Gun.Last() && r.RandevuTarihi.Date <= son7Gun.First())
+                .Where(r => r.RandevuTarihi.Date >= son7Gun.Last() && 
+                           r.RandevuTarihi.Date <= son7Gun.First() &&
+                           r.OgrenciID != null) // Sadece dolu randevuları al
                 .GroupBy(r => r.RandevuTarihi.Date)
                 .Select(g => new
                 {
