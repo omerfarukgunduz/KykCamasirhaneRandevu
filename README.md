@@ -3,6 +3,8 @@
 
 Bu proje, KYK yurtlarındaki çamaşırhane kullanımını dijitalleştirmek amacıyla geliştirilmiş bir web tabanlı randevu sistemidir. Öğrencilerin belirlenen saat aralıklarında adil şekilde çamaşırhane randevusu almasını ve bu süreci yönetimini amaçlamaktadır.
 
+## 🚀 Tanıtım Videosu https://drive.google.com/file/d/1sGt82QafbLyp7fGc4ft3BT2VWnKmfz5o/view?usp=sharing 
+
 ## 🚀 Özellikler
 
 - Öğrenci kayıt ve giriş sistemi
